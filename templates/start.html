@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method="post" id="form">
+        <label for="zit1"><input type="radio" id="zit1" name="zit" value="{{g.zit1id}}-{{g.zit2id}}">{{g.zit1text}}</label>
+        <label for="zit2"><input type="radio" id="zit2" name="zit" value="{{g.zit2id}}-{{g.zit1id}}">{{g.zit2text}}</label>
+        <input type="submit" value="OK">
+    </form>
+{% endblock %}

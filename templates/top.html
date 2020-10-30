@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% for quote in g.quotes %}
+        <div>{{ quote }}</div>
+    {% endfor %}
+{% endblock %}

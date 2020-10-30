@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="anmerkung">Alle Zitate werden vorher geprüft. Deswegen dauert es ein wenig bis dein eingereichtest Zitat hier erscheint.</div>
+    {% for quote in g.quotes %}
+        <div>{{ quote }}</div>
+    {% endfor %}
+{% endblock %}

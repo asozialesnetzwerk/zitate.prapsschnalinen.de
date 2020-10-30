@@ -1,0 +1,9 @@
+#form input {display: block;}
+html { font-family: sans-serif; background: #FFF; padding:  5% 15% 15%; }
+nav { background: red; display: flex; align-items: center; padding: 0 0.5rem; }
+nav h1 { flex: auto; margin: 0; }
+nav h1 a { text-decoration: none; padding: 0.25rem 0.5rem; }
+nav ul  { display: flex; list-style: none; margin: 0; padding: 0; }
+.content { padding: 0 10% 10%; align-items: center; display:block;}
+#help {font-size: 10px;}
+.anmerkung {font-size: 14px;}

@@ -1,0 +1,14 @@
+<!doctype html>
+<title>Zitatvoting</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<nav>Eine Seite um die witzigsten Zitate herauszufinden.</nav>
+<div class="content">
+    {% block content %}{% endblock %}
+    {% if g.page != 'start' %}
+        <div class="anmerkung"><a href="/">zum Voting</a></div>
+    {% else %}
+        <div class="anmerkung"><a href="{{ url_for('einreichen') }}">Zitat hinzufügen</a></div>
+    {% endif %}
+    <div id="help">Ich kann übrigens überhaupt kein webdesign, deswegen wäre es cool, wenn du diese Seite für mich
+        schöner machen würdest. Schreib dafür bitte eine E-Mail an zitate@prapsschnalinen.de</div>
+</div>
