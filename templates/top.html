@@ -2,6 +2,6 @@
 
 {% block content %}
     {% for quote in g.quotes %}
-        <div>{{ quote }}</div>
+<div>{{ quote[0] }}<b> Score: {{ quote[1] }}</b></div>
     {% endfor %}
 {% endblock %}

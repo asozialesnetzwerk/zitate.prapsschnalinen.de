@@ -88,7 +88,7 @@ def create_app(test_config=None):
             return thing.votes/thing.shows
         quotes = sorted(list(Quote.select()), key=lambda quote: quote.votes/quote.shows if quote.shows != 0 else 0, reverse=True)
         print([(get_sorting_factor(quote), quote.new_author) for quote in quotes])
-        g.quotes = [f'"{quote.quote}" - {quote.new_author}' for quote in quotes[:5]]
+        g.quotes = [(f'"{quote.quote}" - {quote.new_author}', round(get_sorting_factor(quote)*100)) for quote in quotes[:10]]
         return render_template('top.html')
 
     @app.route('/zitate')
