@@ -49,6 +49,8 @@ def create_app(test_config=None):
 
         if len(final_quotes) == 1:
             final_quotes.append(choice(quotes.pop(quotes[0])))
+        elif len(final_quotes) == 0:
+            final_quotes = quotes
 
 
         zit1 = choice(final_quotes)
