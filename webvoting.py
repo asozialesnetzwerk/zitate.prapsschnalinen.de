@@ -44,11 +44,12 @@ def create_app(test_config=None):
         quotes = sorted(quotes, key=lambda quote: quote.shows)
         final_quotes = []
         for quote in quotes:
-            if quote.shows == quotes[0].shows:
+            if quote.shows != quotes[-1].shows:
                 final_quotes.append(quote)
 
         if len(final_quotes) == 1:
-            final_quotes.append(quotes[1])
+            final_quotes.append(choice(quotes.pop(quotes[0])))
+
 
         zit1 = choice(final_quotes)
         zit2 = choice(final_quotes)
