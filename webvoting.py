@@ -91,8 +91,29 @@ def create_app(test_config=None):
     @app.route('/zitate')
     def zitate():
         g.page = 'zitate'
-        g.quotes = [f'"{quote.quote}" - {quote.new_author}' for quote in Quote.select().where(Quote.checked == True)]
+        g.quotes = [f'"{quote.quote}" - {quote.new_author}' for quote in Quote.select().where(Quote.checked is True)]
         return render_template('zitate.html')
+
+    @app.route("/stats")
+    def stats():
+        g.page = 'stats'
+        g.lines = []
+
+        quotes = list(Quote.select())
+        quotes = sorted(quotes, key=lambda quote: quote.shows)
+        final_quotes = []
+        for quote in quotes:
+            if quote.shows != quotes[-1].shows:
+                final_quotes.append(quote)
+
+        if len(final_quotes) == 1:
+            final_quotes.append(choice(quotes.pop(quotes[0])))
+
+        for quote in sorted(list(Quote.select()), key=lambda quote: quote.shows, reverse=True):
+            prfx = '*' if quote in final_quotes else '-'
+            g.lines.append(prfx+"="*quote.shows)
+        return render_template('stats.html')
+
 
 
     return app
