@@ -40,7 +40,8 @@ def create_app(test_config=None):
             not_voted_quote = Quote.get_by_id(int(not_voted))
             not_voted_quote.shows += 1
             not_voted_quote.save()
-        quotes = list(Quote.select())
+
+        quotes = list(Quote.select().where(Quote.checked == True))
         quotes = sorted(quotes, key=lambda quote: quote.shows)
         final_quotes = []
         for quote in quotes:
@@ -93,7 +94,7 @@ def create_app(test_config=None):
     @app.route('/zitate')
     def zitate():
         g.page = 'zitate'
-        g.quotes = [f'"{quote.quote}" - {quote.new_author}' for quote in Quote.select().where(Quote.checked is True)]
+        g.quotes = [f'"{quote.quote}" - {quote.new_author}' for quote in Quote.select().where(Quote.checked == True)]
         return render_template('zitate.html')
 
     @app.route("/stats")
@@ -110,6 +111,8 @@ def create_app(test_config=None):
 
         if len(final_quotes) == 1:
             final_quotes.append(choice(quotes.pop(quotes[0])))
+        elif len(final_quotes) == 0:
+            final_quotes = quotes
 
         for quote in sorted(list(Quote.select()), key=lambda quote: quote.shows, reverse=True):
             prfx = '*' if quote in final_quotes else '-'
