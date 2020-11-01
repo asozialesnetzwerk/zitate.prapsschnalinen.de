@@ -1,17 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="anmerkung">Wenn du danach zur Startseite weitergeleitet wirst, hat alles geklappt.</div>
-    <dic class="anmerkung"><a href="{{ url_for('zitate') }}">Hier</a> sind alle Zitate aufgelistet, guck bitte vorher ob es nicht schon da ist.</dic>
-    <form method="post" id="form">
-        <label for="quote">Zitat</label>
-        <input name="quote" id="quote" required>
-        <label for="wrongauthor">Falscher Autor</label>
-        <input name="wrongauthor" id="wrongauthor" required>
-        <label for="realauthor">Eigentlicher Autor:</label>
-        <input name="realauthor" id="realauthor" required>
-        <label for="email">Deine E-Mail Adresse:</label>
-        <input name="email" id="email" type="email">
-        <input type="submit" value="Einreichen">
-    </form>
+    <h5 class="card-header">Zitat hinzufügen</h5>
+    <div class="card-body">
+    <h5 class="card-title">Was ist dein lieblings-falsch-zugeordnetes-zitat?</h5>
+    <!--div class="anmerkung">Wenn du danach zur Startseite weitergeleitet wirst, hat alles geklappt.</div>
+    <dic class="anmerkung"><a href="{{ url_for('zitate') }}">Hier</a> sind alle Zitate aufgelistet, guck bitte vorher ob es nicht schon da ist.</dic-->
+    <div class="card-text">
+        <form method="post" id="form">
+            <label for="quote">Zitat</label>
+            <input name="quote" id="quote" required><br>
+            <label for="wrongauthor">Falscher Autor</label>
+            <input name="wrongauthor" id="wrongauthor" required><br>
+            <label for="realauthor">Eigentlicher Autor:</label>
+            <input name="realauthor" id="realauthor" required><br>
+            <label for="email">Deine E-Mail Adresse:</label>
+            <input name="email" id="email" type="email"><br>
+            <input type="submit" value="Einreichen">
+        </form>
+    </div>
+        </div>
 {% endblock %}

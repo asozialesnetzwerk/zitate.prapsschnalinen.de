@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <h5 class="card-header">Top Zitate</h5>
+    <div class="card-body">
+        <h5 class="card-title">Die 3 witzigsten Zitate</h5>
+        <div class="card-content">
     {% for quote in g.quotes %}
 <div>{{ quote[0] }}<b> Score: {{ quote[1] }}</b></div>
     {% endfor %}
+        </div>
+        </div>
 {% endblock %}

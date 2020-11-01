@@ -1,14 +1,72 @@
-<!doctype html>
-<title>Zitatvoting</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<nav>Eine Seite um die witzigsten Zitate herauszufinden.</nav>
-<div class="content">
-    {% block content %}{% endblock %}
-    {% if g.page != 'start' %}
-        <div class="anmerkung"><a href="/">zum Voting</a></div>
-    {% else %}
-        <div class="anmerkung"><a href="{{ url_for('einreichen') }}">Zitat hinzufügen</a></div>
-    {% endif %}
-    <div id="help">Ich kann übrigens überhaupt kein webdesign, deswegen wäre es cool, wenn du diese Seite für mich
-        schöner machen würdest. Schreib dafür bitte eine E-Mail an zitate@prapsschnalinen.de</div>
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <title>Zitatvoting</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/custom.css') }}">
+  </head>
+  <body class="text-center">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light static-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+            <img src="{{ url_for('static', filename='/assets/img/ata-logo-transparent.png') }}" alt="antiterroranschlag" height="45" width="45">
+            Falsch zugeordnete Zitate
+          </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/">Voting
+                  <span class="sr-only">(current)</span>
+                </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/einreichen">Zitat einreichen</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/zitate">Alle Zitate</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/top">Top Zitate</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div id="wrap">
+  <div id="main" class="container clear-top">
+
+    <div class="card">
+      {% block content %}
+      <h5 class="card-header">Jetzt abstimmen!</h5>
+      <div class="card-body">
+        <h5 class="card-title">Welches Zitat findest du witziger?</h5>
+        <div class="card-text">
+
+
+
+        </div>
+
+      </div>
+      {% endblock%}
+    </div>
+  </div>
 </div>
+
+
+
+  <footer class="footer">
+      <div class="container">
+        <span class="text-muted">« Designed by klapsenjesus » <br> <a href="https://prapsschnalinen.de/?page_id=23">Impressum</a> </span>
+      </div>
+    </footer>
+
+  </body>
+</html>
+

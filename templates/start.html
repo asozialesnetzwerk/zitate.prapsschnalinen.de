@@ -1,10 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div>Welches Zitat ist witziger?</div>
+    <h5 class="card-header">Abstimmung</h5>
+    <div class="card-body">
+        <h5 class="card-title">Welches Zitat ist witziger?</h5>
+        <div class="card-text">
     <form method="post" id="form">
-        <label for="zit1"><input type="radio" id="zit1" name="zit" value="{{g.zit1id}}-{{g.zit2id}}">{{g.zit1text}}</label>
-        <label for="zit2"><input type="radio" id="zit2" name="zit" value="{{g.zit2id}}-{{g.zit1id}}">{{g.zit2text}}</label>
-        <input type="submit" value="OK">
+        <input type="radio" id="zit1" name="zit" value="{{g.zit1id}}-{{g.zit2id}}"><label for="zit1">{{g.zit1text}}</label></input><br>
+        <br>
+        <input type="radio" id="zit2" name="zit" value="{{g.zit2id}}-{{g.zit1id}}"><label for="zit2">{{g.zit2text}}</label><br>
+        <button type="submit" value="ok" class="btn btn-danger voteSubmit">OK</button>
     </form>
+            </div>
+        </div>
 {% endblock %}
