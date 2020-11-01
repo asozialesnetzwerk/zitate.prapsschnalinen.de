@@ -17,6 +17,17 @@
 
 html, body {
   height: 100%;
+  background-color: #111111;
+}
+
+nav {
+    background: #202020;
+    color: #bebebe;
+}
+
+.card {
+    background: #202020;
+    color: #bebebe;
 }
 
 #wrap {
