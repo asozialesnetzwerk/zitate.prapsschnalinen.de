@@ -102,7 +102,7 @@ def create_app(test_config=None):
                 f'"{quote.quote}" - {quote.new_author}',
                 round(get_sorting_factor(quote) * 100),
             )
-            for quote in quotes[:10]
+            for quote in quotes[:3]
         ]
         return render_template("top.html")
 
