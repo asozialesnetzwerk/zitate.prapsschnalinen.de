@@ -40,21 +40,18 @@
     </div>
   </nav>
 
-  <div id="wrap">
+<div id="wrap">
   <div id="main" class="container clear-top">
-
+    {% for message in get_flashed_messages() %}
+    <div class="card">
+      <div class="card-text">
+        <div class="flash">{{message}}</div>
+      </div>
+    </div>
+    {% endfor %}
     <div class="card">
       {% block content %}
-      <h5 class="card-header">Jetzt abstimmen!</h5>
-      <div class="card-body">
-        <h5 class="card-title">Welches Zitat findest du witziger?</h5>
-        <div class="card-text">
-
-
-
-        </div>
-
-      </div>
+      <!-- content -->
       {% endblock%}
     </div>
   </div>
