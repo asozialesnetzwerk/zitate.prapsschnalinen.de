@@ -32,7 +32,7 @@ def create_app(test_config=None):
     def hello():
         return "Hello, World"
 
-    @app.route("/", methods=("GET", "POST"))
+    @app.route("/", methods=("GET",))
     def start():
         g.page = "start"
         if request.method == "POST":
@@ -69,6 +69,19 @@ def create_app(test_config=None):
         g.zit1text = f'"{zit1.quote}" - {zit1.new_author}'
         g.zit2text = f'"{zit2.quote}" - {zit2.new_author}'
         return render_template("start.html")
+
+    @app.route("/abstimmung", methods=("POST",))
+    def abstimmung():
+        if 'zit' in request.form:
+            voted, not_voted = request.form["zit"].split("-")
+            voted_quote = Quote.get_by_id(int(voted))
+            voted_quote.votes += 1
+            voted_quote.shows += 1
+            voted_quote.save()
+            not_voted_quote = Quote.get_by_id(int(not_voted))
+            not_voted_quote.shows += 1
+            not_voted_quote.save()
+        return redirect('/')
 
     @app.route("/einreichen", methods=("GET", "POST"))
     def einreichen():

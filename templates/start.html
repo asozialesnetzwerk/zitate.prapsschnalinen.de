@@ -5,7 +5,7 @@
     <div class="card-body">
         <h5 class="card-title">Welches Zitat ist witziger?</h5>
         <div class="card-text">
-    <form method="post" id="form">
+    <form action="/abstimmung" method="post" id="form">
         <input type="radio" id="zit1" name="zit" value="{{g.zit1id}}-{{g.zit2id}}"><label for="zit1">&nbsp;{{g.zit1text}}</label></input><br>
         <br>
         <input type="radio" id="zit2" name="zit" value="{{g.zit2id}}-{{g.zit1id}}"><label for="zit2">&nbsp;{{g.zit2text}}</label><br>
