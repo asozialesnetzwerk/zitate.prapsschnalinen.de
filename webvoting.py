@@ -36,14 +36,15 @@ def create_app(test_config=None):
     def start():
         g.page = "start"
         if request.method == "POST":
-            voted, not_voted = request.form["zit"].split("-")
-            voted_quote = Quote.get_by_id(int(voted))
-            voted_quote.votes += 1
-            voted_quote.shows += 1
-            voted_quote.save()
-            not_voted_quote = Quote.get_by_id(int(not_voted))
-            not_voted_quote.shows += 1
-            not_voted_quote.save()
+            if 'zit' in request.form:
+                voted, not_voted = request.form["zit"].split("-")
+                voted_quote = Quote.get_by_id(int(voted))
+                voted_quote.votes += 1
+                voted_quote.shows += 1
+                voted_quote.save()
+                not_voted_quote = Quote.get_by_id(int(not_voted))
+                not_voted_quote.shows += 1
+                not_voted_quote.save()
 
         quotes = list(Quote.select().where(Quote.checked == True))
         quotes = sorted(quotes, key=lambda quote: quote.shows)
