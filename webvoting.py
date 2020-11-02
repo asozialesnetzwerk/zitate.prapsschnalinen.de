@@ -120,6 +120,30 @@ def create_app(test_config=None):
         ]
         return render_template("top.html")
 
+    @app.route("/topall")
+    def topall():
+        g.page = "top"
+
+        def get_sorting_factor(thing):
+            if thing.shows == 0:
+                return 0
+            return thing.votes / thing.shows
+
+        quotes = sorted(
+            list(Quote.select()),
+            key=lambda quote: quote.votes / quote.shows if quote.shows != 0 else 0,
+            reverse=True,
+        )
+        g.quotes = [
+            (
+                f'"{quote.quote}" - {quote.new_author}',
+                round(get_sorting_factor(quote) * 100),
+            )
+            for quote in quotes
+        ]
+        return render_template("top.html")
+
+
     @app.route("/zitate")
     def zitate():
         g.page = "zitate"
