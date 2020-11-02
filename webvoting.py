@@ -93,7 +93,7 @@ def create_app(test_config=None):
                 real_author=request.form["realauthor"],
                 contributed_by=request.form["email"],
             )
-            flash("Dein Zitat wurde gespeichert!")
+            flash("Dein Zitat wurde gespeichert! Sobald ich es überprüft hab, wird es Öffentlich sein.")
             return redirect("/")
         return render_template("einreichen.html")
 
