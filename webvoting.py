@@ -2,6 +2,7 @@ import os
 from random import choice
 from flask import Flask
 from flask import (
+    session,
     flash,
     g,
     redirect,
@@ -36,7 +37,7 @@ def create_app(test_config=None):
     def start():
         g.page = "start"
         if request.method == "POST":
-            if 'zit' in request.form:
+            if "zit" in request.form:
                 voted, not_voted = request.form["zit"].split("-")
                 voted_quote = Quote.get_by_id(int(voted))
                 voted_quote.votes += 1
@@ -50,13 +51,18 @@ def create_app(test_config=None):
         quotes = sorted(quotes, key=lambda quote: quote.shows)
         final_quotes = []
         for quote in quotes:
-            if quote.shows != quotes[-1].shows:
+            if quote.shows != quotes[-1].shows and not (
+                ("votes" in session)
+                and (quote._pk in session["votes"])
+            ):
                 final_quotes.append(quote)
 
         if len(final_quotes) == 1:
-            final_quotes.append(choice(quotes.pop(quotes[0])))
+            final_quotes.append(choice(final_quotes))
+            session['votes'] = []
         elif len(final_quotes) == 0:
             final_quotes = quotes
+            session['votes'] = []
 
         zit1 = choice(final_quotes)
         zit2 = choice(final_quotes)
@@ -72,7 +78,7 @@ def create_app(test_config=None):
 
     @app.route("/abstimmung", methods=("POST",))
     def abstimmung():
-        if 'zit' in request.form:
+        if "zit" in request.form:
             voted, not_voted = request.form["zit"].split("-")
             voted_quote = Quote.get_by_id(int(voted))
             voted_quote.votes += 1
@@ -81,7 +87,10 @@ def create_app(test_config=None):
             not_voted_quote = Quote.get_by_id(int(not_voted))
             not_voted_quote.shows += 1
             not_voted_quote.save()
-        return redirect('/')
+            if 'votes' not in session:
+                session['votes'] = []
+            session["votes"] += [int(voted), int(not_voted)]
+        return redirect("/")
 
     @app.route("/einreichen", methods=("GET", "POST"))
     def einreichen():
@@ -93,7 +102,9 @@ def create_app(test_config=None):
                 real_author=request.form["realauthor"],
                 contributed_by=request.form["email"],
             )
-            flash("Dein Zitat wurde gespeichert! Sobald ich es überprüft hab, wird es Öffentlich sein.")
+            flash(
+                "Dein Zitat wurde gespeichert! Sobald ich es überprüft hab, wird es Öffentlich sein."
+            )
             return redirect("/")
         return render_template("einreichen.html")
 
@@ -142,7 +153,6 @@ def create_app(test_config=None):
             for quote in quotes
         ]
         return render_template("top.html")
-
 
     @app.route("/zitate")
     def zitate():
