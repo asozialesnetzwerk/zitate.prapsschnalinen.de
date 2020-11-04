@@ -45,4 +45,9 @@ nav {
   height: 150px;
   clear:both;
   padding-top:20px;
-} 
+}
+
+.form-group {
+    margin-left: 25%;
+    margin-right: 25%;
+}
