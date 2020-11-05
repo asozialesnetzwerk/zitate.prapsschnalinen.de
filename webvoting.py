@@ -189,4 +189,9 @@ def create_app(test_config=None):
             g.lines.append(prfx + "=" * quote.shows)
         return render_template("stats.html")
 
+    @app.route("/removecookies")
+    def removecookies():
+        session.clear()
+        return redirect("/")
+
     return app
