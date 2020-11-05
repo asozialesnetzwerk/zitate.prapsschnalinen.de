@@ -107,7 +107,7 @@ def create_app(test_config=None):
                 "Dein Zitat wurde gespeichert! Sobald ich es überprüft hab, wird es Öffentlich sein."
             )
             session['email'] = request.form["email"]
-            return redirect("/")
+            return redirect("/einreichen")
         return render_template("einreichen.html")
 
     @app.route("/top")
@@ -129,7 +129,7 @@ def create_app(test_config=None):
                 f'"{quote.quote}" - {quote.new_author}',
                 round(get_sorting_factor(quote) * 100),
             )
-            for quote in quotes[:3]
+            for quote in quotes[:5]
         ]
         return render_template("top.html")
 
