@@ -95,6 +95,7 @@ def create_app(test_config=None):
     @app.route("/einreichen", methods=("GET", "POST"))
     def einreichen():
         g.page = "einreichen"
+        g.email = session["email"] if 'email' in session else ''
         if request.method == "POST":
             Quote.create(
                 quote=request.form["quote"],
@@ -105,6 +106,7 @@ def create_app(test_config=None):
             flash(
                 "Dein Zitat wurde gespeichert! Sobald ich es überprüft hab, wird es Öffentlich sein."
             )
+            session['email'] = request.form["email"]
             return redirect("/")
         return render_template("einreichen.html")
 
