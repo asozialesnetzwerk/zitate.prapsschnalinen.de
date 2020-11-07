@@ -168,25 +168,15 @@ def create_app(test_config=None):
     @app.route("/stats")
     def stats():
         g.page = "stats"
-        g.lines = []
-
+        g.votes = 0
+        g.shows = 0
+        g.quotes = 0
         quotes = list(Quote.select())
-        quotes = sorted(quotes, key=lambda quote: quote.shows)
-        final_quotes = []
         for quote in quotes:
-            if quote.shows != quotes[-1].shows:
-                final_quotes.append(quote)
-
-        if len(final_quotes) == 1:
-            final_quotes.append(choice(quotes.pop(quotes[0])))
-        elif len(final_quotes) == 0:
-            final_quotes = quotes
-
-        for quote in sorted(
-            list(Quote.select()), key=lambda quote: quote.shows, reverse=True
-        ):
-            prfx = "*" if quote in final_quotes else "-"
-            g.lines.append(prfx + "=" * quote.shows)
+            g.votes += quote.votes
+            g.shows += quote.shows
+            g.quotes += 1
+        g.shows = g.shows/len(quotes)
         return render_template("stats.html")
 
     @app.route("/removecookies")
