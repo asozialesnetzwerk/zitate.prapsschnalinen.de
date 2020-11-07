@@ -118,18 +118,18 @@ def create_app(test_config=None):
         g.page = "top"
 
         def get_sorting_factor(thing):
-            if thing.shows == 0:
+            if thing.showed == 0:
                 return 0
-            return thing.votes / thing.shows
+            return thing.voted / thing.showed
 
         quotes = sorted(
-            list(Quote.select()),
-            key=lambda quote: quote.votes / quote.shows if quote.shows != 0 else 0,
+            list(WrongQuote.select()),
+            key=lambda quote: quote.voted / quote.showed if quote.showed != 0 else 0,
             reverse=True,
         )
         g.quotes = [
             (
-                f'"{quote.quote}" - {quote.new_author}',
+                f'"{quote.quote.quote}" - {quote.quote.author.author}',
                 round(get_sorting_factor(quote) * 100),
             )
             for quote in quotes[:5]
@@ -143,16 +143,16 @@ def create_app(test_config=None):
         def get_sorting_factor(thing):
             if thing.shows == 0:
                 return 0
-            return thing.votes / thing.shows
+            return thing.votes / thing.showed
 
         quotes = sorted(
             list(Quote.select()),
-            key=lambda quote: quote.votes / quote.shows if quote.shows != 0 else 0,
+            key=lambda quote: quote.votes / quote.showed if quote.showed != 0 else 0,
             reverse=True,
         )
         g.quotes = [
             (
-                f'"{quote.quote}" - {quote.new_author}',
+                f'"{quote.quote.quote}" - {quote.quote.author.author}',
                 round(get_sorting_factor(quote) * 100),
             )
             for quote in quotes
@@ -163,7 +163,7 @@ def create_app(test_config=None):
     def zitate():
         g.page = "zitate"
         g.quotes = [
-            f'"{quote.quote}" - {quote.new_author}'
+            f'"{quote.quote.quote}" - {quote.quote.author.author}'
             for quote in WrongQuote.select().where(WrongQuote.checked == True)
         ]
         return render_template("zitate.html")
