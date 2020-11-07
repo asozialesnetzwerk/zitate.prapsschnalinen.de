@@ -43,6 +43,9 @@ class WrongQuote(BaseModel):
     checked = BooleanField(default=False)
     contributed_by = CharField(null=True, default=None)
 
+    def get_score(self):
+        return self.voted/self.showed if self.showed > 0 else 0
+
     def get_dict(self):
         return {'id': self._pk,
                 'quote': self.quote.get_dict(),

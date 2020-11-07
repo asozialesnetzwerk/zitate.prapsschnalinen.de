@@ -3,6 +3,7 @@ from db import WrongQuote
 
 api = Blueprint('api', __name__, url_prefix="/api/quotes")
 
+
 @api.route('/')
 def index():
     quotes = []

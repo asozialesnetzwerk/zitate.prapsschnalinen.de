@@ -131,7 +131,7 @@ def create_app(test_config=None):
         )
         g.quotes = [
             (
-                f'"{quote.quote.quote}" - {quote.quote.author.author}',
+                f'"{quote.quote.quote}" - {quote.author.author}',
                 round(get_sorting_factor(quote) * 100),
             )
             for quote in quotes[:5]
@@ -154,7 +154,7 @@ def create_app(test_config=None):
         )
         g.quotes = [
             (
-                f'"{quote.quote.quote}" - {quote.quote.author.author}',
+                f'"{quote.quote.quote}" - {quote.author.author}',
                 round(get_sorting_factor(quote) * 100),
             )
             for quote in quotes
@@ -165,7 +165,7 @@ def create_app(test_config=None):
     def zitate():
         g.page = "zitate"
         g.quotes = [
-            f'"{quote.quote.quote}" - {quote.quote.author.author}'
+            f'"{quote.quote.quote}" - {quote.author.author}'
             for quote in WrongQuote.select().where(WrongQuote.checked == True)
         ]
         return render_template("zitate.html")
