@@ -27,7 +27,7 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    from db import database, Quote
+    from db import WrongQuote, Quote, Author
 
     @app.route("/hello")
     def hello():
@@ -36,22 +36,12 @@ def create_app(test_config=None):
     @app.route("/", methods=("GET",))
     def start():
         g.page = "start"
-        if request.method == "POST":
-            if "zit" in request.form:
-                voted, not_voted = request.form["zit"].split("-")
-                voted_quote = Quote.get_by_id(int(voted))
-                voted_quote.votes += 1
-                voted_quote.shows += 1
-                voted_quote.save()
-                not_voted_quote = Quote.get_by_id(int(not_voted))
-                not_voted_quote.shows += 1
-                not_voted_quote.save()
 
-        quotes = list(Quote.select().where(Quote.checked == True))
-        quotes = sorted(quotes, key=lambda quote: quote.shows)
+        quotes = list(WrongQuote.select().where(WrongQuote.checked == True))
+        quotes = sorted(quotes, key=lambda quote: quote.showed)
         final_quotes = []
         for quote in quotes:
-            if quote.shows != quotes[-1].shows and not (
+            if quote.showed != quotes[-1].showed and not (
                 ("votes" in session)
                 and (quote._pk in session["votes"])
             ):
@@ -72,20 +62,20 @@ def create_app(test_config=None):
 
         g.zit1id = zit1._pk
         g.zit2id = zit2._pk
-        g.zit1text = f'"{zit1.quote}" - {zit1.new_author}'
-        g.zit2text = f'"{zit2.quote}" - {zit2.new_author}'
+        g.zit1text = f'"{zit1.quote.quote}" - {zit1.author.author}'
+        g.zit2text = f'"{zit2.quote.quote}" - {zit2.author.author}'
         return render_template("start.html")
 
     @app.route("/abstimmung", methods=("POST",))
     def abstimmung():
         if "zit" in request.form:
             voted, not_voted = request.form["zit"].split("-")
-            voted_quote = Quote.get_by_id(int(voted))
-            voted_quote.votes += 1
-            voted_quote.shows += 1
+            voted_quote = WrongQuote.get_by_id(int(voted))
+            voted_quote.voted += 1
+            voted_quote.showed += 1
             voted_quote.save()
-            not_voted_quote = Quote.get_by_id(int(not_voted))
-            not_voted_quote.shows += 1
+            not_voted_quote = WrongQuote.get_by_id(int(not_voted))
+            not_voted_quote.showed += 1
             not_voted_quote.save()
             if 'votes' not in session:
                 session['votes'] = []
@@ -97,12 +87,25 @@ def create_app(test_config=None):
         g.page = "einreichen"
         g.email = session["email"] if 'email' in session else ''
         if request.method == "POST":
-            Quote.create(
-                quote=request.form["quote"],
-                new_author=request.form["wrongauthor"],
-                real_author=request.form["realauthor"],
-                contributed_by=request.form["email"],
-            )
+            quote = request.form["quote"].strip()
+            new_author = request.form["wrongauthor"].strip()
+            real_author = request.form['realauthor'].strip()
+            contributed_by = request.form['email']
+            if real_author not in [a.author for a in Author.select()]:
+                real_author_db = Author.create(author=real_author)
+            else:
+                real_author_db = Author.get(Author.author == real_author)
+            if quote not in [q.quote for q in Quote.select()]:
+                quote_db = Quote.create(quote=quote, author=real_author_db)
+            else:
+                quote_db = Quote.get(Quote.quote == quote)
+            if new_author not in [a.author for a in Author.select()]:
+                new_author_db = Author.create(author=new_author)
+            else:
+                new_author_db = Author.get(Author.author == new_author)
+            WrongQuote.create(quote=quote_db,
+                              author=new_author_db,
+                              contributed_by=contributed_by)
             flash(
                 "Dein Zitat wurde gespeichert! Sobald ich es überprüft hab, wird es Öffentlich sein."
             )
@@ -161,7 +164,7 @@ def create_app(test_config=None):
         g.page = "zitate"
         g.quotes = [
             f'"{quote.quote}" - {quote.new_author}'
-            for quote in Quote.select().where(Quote.checked == True)
+            for quote in WrongQuote.select().where(WrongQuote.checked == True)
         ]
         return render_template("zitate.html")
 
