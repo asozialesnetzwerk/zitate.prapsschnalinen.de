@@ -12,6 +12,10 @@ class BaseModel(Model):
 class Author(BaseModel):
     author = CharField()
 
+    def get_dict(self):
+        return {'id': self._pk,
+                'author': self.author}
+
 
 if not Author.table_exists():
     Author.create_table()
@@ -20,6 +24,11 @@ if not Author.table_exists():
 class Quote(BaseModel):
     quote = CharField()
     author = ForeignKeyField(Author, null=True)
+
+    def get_dict(self):
+        return {'id': self._pk,
+                'quote': self.quote,
+                'author': self.author.get_dict()}
 
 
 if not Quote.table_exists():
@@ -33,6 +42,14 @@ class WrongQuote(BaseModel):
     showed = IntegerField(default=0)
     checked = BooleanField(default=False)
     contributed_by = CharField(null=True, default=None)
+
+    def get_dict(self):
+        return {'id': self._pk,
+                'quote': self.quote.get_dict(),
+                'author': self.author.get_dict(),
+                'voted': self.voted,
+                'showed': self.showed,
+                'checked': self.checked}
 
 
 if not WrongQuote.table_exists():

@@ -28,6 +28,8 @@ def create_app(test_config=None):
         pass
 
     from db import WrongQuote, Quote, Author
+    from api import api
+    app.register_blueprint(api)
 
     @app.route("/hello")
     def hello():
