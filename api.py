@@ -45,16 +45,24 @@ def api_wrongquotes():
             selected = WrongQuote.select()
         for wrongquote in selected:
             wrongquotes.append(wrongquote.get_dict())
-        if ('simulate' in request.args) and ('author' in request.args) and ('quote' in request.args) and (request.args.get('simulate') == 'true') and (len(wrongquotes) == 0):
-            wrongquotes.append({
-            "id": None,
-            "quote": Quote.get_by_id(request.args.get('quote')).get_dict(),
-            "author": Author.get_by_id(request.args.get('author')).get_dict(),
-            "voted": 0,
-            "showed": 0,
-            "rating": 0,
-            "checked": True,
-        })
+        if (
+            ("simulate" in request.args)
+            and ("author" in request.args)
+            and ("quote" in request.args)
+            and (request.args.get("simulate") == "true")
+            and (len(wrongquotes) == 0)
+        ):
+            wrongquotes.append(
+                {
+                    "id": None,
+                    "quote": Quote.get_by_id(request.args.get("quote")).get_dict(),
+                    "author": Author.get_by_id(request.args.get("author")).get_dict(),
+                    "voted": 0,
+                    "showed": 0,
+                    "rating": 0,
+                    "checked": True,
+                }
+            )
         return jsonify(wrongquotes)
     elif request.method == "POST":
         wrongquote = WrongQuote.create(
@@ -65,9 +73,16 @@ def api_wrongquotes():
         return jsonify(wrongquote.get_dict())
 
 
-@api.route("/wrongquotes/<int:pk>")
+@api.route("/wrongquotes/<int:pk>", methods=["GET", "POST"])
 def api_wrongquotes_id(pk):
-    return jsonify(WrongQuote.get_by_id(pk).get_dict())
+    if request.method == "GET":
+        return jsonify(WrongQuote.get_by_id(pk).get_dict())
+    elif request.method == "POST":
+        if int(request.form["vote"]) in [-1, 1]:
+            wrongquote = WrongQuote.get_by_id(pk)
+            wrongquote.rating += int(request.form["vote"])
+            wrongquote.save()
+            return jsonify(wrongquote.get_dict())
 
 
 @api.route("/wrongquotes/count")
