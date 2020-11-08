@@ -15,8 +15,7 @@ class Author(BaseModel):
     contributed_by = CharField(null=True, default=None)
 
     def get_dict(self):
-        return {'id': self._pk,
-                'author': self.author}
+        return {"id": self._pk, "author": self.author}
 
 
 if not Author.table_exists():
@@ -30,9 +29,7 @@ class Quote(BaseModel):
     contributed_by = CharField(null=True, default=None)
 
     def get_dict(self):
-        return {'id': self._pk,
-                'quote': self.quote,
-                'author': self.author.get_dict()}
+        return {"id": self._pk, "quote": self.quote, "author": self.author.get_dict()}
 
 
 if not Quote.table_exists():
@@ -49,20 +46,19 @@ class WrongQuote(BaseModel):
     contributed_by = CharField(null=True, default=None)
 
     def get_score(self):
-        return self.voted/self.showed if self.showed > 0 else 0
+        return self.voted / self.showed if self.showed > 0 else 0
 
     def get_dict(self):
-        return {'id': self._pk,
-                'quote': self.quote.get_dict(),
-                'author': self.author.get_dict(),
-                'voted': self.voted,
-                'showed': self.showed,
-                'checked': self.checked}
+        return {
+            "id": self._pk,
+            "quote": self.quote.get_dict(),
+            "author": self.author.get_dict(),
+            "voted": self.voted,
+            "showed": self.showed,
+            "rating": self.rating,
+            "checked": self.checked,
+        }
 
 
 if not WrongQuote.table_exists():
     WrongQuote.create_table()
-
-
-
-

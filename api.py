@@ -29,26 +29,32 @@ def api_wrongquotes():
     if request.method == "GET":
         wrongquotes = []
         if ("quote" in request.args) and ("author" in request.args):
-            selected = (
-                WrongQuote.select()
-                .where(
-                    (WrongQuote.author == request.args.get("author")) & (WrongQuote.quote == request.args.get("quote"))
-                )
+            selected = WrongQuote.select().where(
+                (WrongQuote.author == request.args.get("author"))
+                & (WrongQuote.quote == request.args.get("quote"))
             )
         elif "quote" in request.args:
-            selected = (
-                WrongQuote.select()
-                .where(WrongQuote.quote == request.args.get("quote"))
+            selected = WrongQuote.select().where(
+                WrongQuote.quote == request.args.get("quote")
             )
         elif "author" in request.args:
-            selected = (
-                WrongQuote.select()
-                .where(WrongQuote.author == request.args.get("author"))
+            selected = WrongQuote.select().where(
+                WrongQuote.author == request.args.get("author")
             )
         else:
             selected = WrongQuote.select()
         for wrongquote in selected:
             wrongquotes.append(wrongquote.get_dict())
+        if ('simulate' in request.args) and ('author' in request.args) and ('quote' in request.args) and (request.args.get('simulate') == 'true') and (len(wrongquotes) == 0):
+            wrongquotes.append({
+            "id": None,
+            "quote": Quote.get_by_id(request.args.get('quote')).get_dict(),
+            "author": Author.get_by_id(request.args.get('author')).get_dict(),
+            "voted": 0,
+            "showed": 0,
+            "rating": 0,
+            "checked": True,
+        })
         return jsonify(wrongquotes)
     elif request.method == "POST":
         wrongquote = WrongQuote.create(
@@ -73,8 +79,8 @@ def api_wrongquotes_counts():
 def quotes():
     if request.method == "GET":
         quotes = []
-        if 'author' in request.args:
-            select = Quote.select().where(Quote.author == request.args.get('author'))
+        if "author" in request.args:
+            select = Quote.select().where(Quote.author == request.args.get("author"))
         else:
             select = Quote.select()
         for quote in select:
