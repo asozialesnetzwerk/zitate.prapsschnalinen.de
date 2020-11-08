@@ -94,15 +94,15 @@ def create_app(test_config=None):
             real_author = request.form['realauthor'].strip()
             contributed_by = request.form['email']
             if real_author not in [a.author for a in Author.select()]:
-                real_author_db = Author.create(author=real_author)
+                real_author_db = Author.create(author=real_author, contributed_by=contributed_by)
             else:
                 real_author_db = Author.get(Author.author == real_author)
             if quote not in [q.quote for q in Quote.select()]:
-                quote_db = Quote.create(quote=quote, author=real_author_db)
+                quote_db = Quote.create(quote=quote, author=real_author_db, contributed_by=contributed_by)
             else:
                 quote_db = Quote.get(Quote.quote == quote)
             if new_author not in [a.author for a in Author.select()]:
-                new_author_db = Author.create(author=new_author)
+                new_author_db = Author.create(author=new_author, contributed_by=contributed_by)
             else:
                 new_author_db = Author.get(Author.author == new_author)
             WrongQuote.create(quote=quote_db,

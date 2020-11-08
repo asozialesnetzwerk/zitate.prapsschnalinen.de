@@ -11,6 +11,8 @@ class BaseModel(Model):
 
 class Author(BaseModel):
     author = CharField()
+    checked = BooleanField(default=False)
+    contributed_by = CharField(null=True, default=None)
 
     def get_dict(self):
         return {'id': self._pk,
@@ -24,6 +26,8 @@ if not Author.table_exists():
 class Quote(BaseModel):
     quote = CharField()
     author = ForeignKeyField(Author, null=True)
+    checked = BooleanField(default=False)
+    contributed_by = CharField(null=True, default=None)
 
     def get_dict(self):
         return {'id': self._pk,
@@ -40,6 +44,7 @@ class WrongQuote(BaseModel):
     author = ForeignKeyField(Author)
     voted = IntegerField(default=0)
     showed = IntegerField(default=0)
+    rating = IntegerField(default=0)
     checked = BooleanField(default=False)
     contributed_by = CharField(null=True, default=None)
 
