@@ -143,13 +143,13 @@ def create_app(test_config=None):
         g.page = "top"
 
         def get_sorting_factor(thing):
-            if thing.shows == 0:
+            if thing.showed == 0:
                 return 0
-            return thing.votes / thing.showed
+            return thing.voted / thing.showed
 
         quotes = sorted(
-            list(Quote.select()),
-            key=lambda quote: quote.votes / quote.showed if quote.showed != 0 else 0,
+            list(WrongQuote.select()),
+            key=lambda quote: quote.voted / quote.showed if quote.showed != 0 else 0,
             reverse=True,
         )
         g.quotes = [
