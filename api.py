@@ -65,8 +65,14 @@ def api_wrongquotes():
             )
         else:
             selected = WrongQuote.select()
+        no_text = "quote" in request.args and request.args.get("quote", bool)
         for wrongquote in selected:
-            wrongquotes.append(wrongquote.get_dict())
+            wq_dict = wrongquote.get_dict()
+            if no_text:
+                del wq_dict["author"]["author"]
+                del wq_dict["quote"]["quote"]
+                del wq_dict["quote"]["author"]["author"]
+            wrongquotes.append(wq_dict)
         if (
             ("simulate" in request.args)
             and ("author" in request.args)
