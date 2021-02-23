@@ -8,10 +8,10 @@ api = Blueprint("/api", __name__, url_prefix="/api")
 @api.route("/")
 def docs():
     d = (
-        "GET /wrongquote [min_rating: &ltmin_rating&gt ; count: &ltcount&gt] - get a random wrongquote<br><br>"
         "GET /wrongquotes - get all wronguotes <br>"
         "GET /wrongquotes/&ltid&gt - get wrongquote from id <br>"
         "GET /wrongquotes/count - get wrongquote count <br>"
+        "GET /wrongquotes/random [min_rating: &ltmin_rating&gt ; count: &ltcount&gt] - get a random wrongquote<br>"
         "POST /wrongquotes [quote: &ltquote_id&gt ; author: &ltauthor_id&gt ; contributed_by ; &ltcontributed_by&gt] - "
         "add wrongquote to db <br><br>"
         "GET /quotes - get all quotes <br>"
@@ -24,9 +24,6 @@ def docs():
         "POST /authors [author: &ltauthor&gt] - add new author to db "
     )
     return d
-
-
-
 
 
 @api.route("/wrongquotes", methods=["GET", "POST"])
@@ -57,11 +54,11 @@ def api_wrongquotes():
                 del wq_dict["quote"]["author"]["author"]
             wrongquotes.append(wq_dict)
         if (
-            ("simulate" in request.args)
-            and ("author" in request.args)
-            and ("quote" in request.args)
-            and (request.args.get("simulate") == "true")
-            and (len(wrongquotes) == 0)
+                ("simulate" in request.args)
+                and ("author" in request.args)
+                and ("quote" in request.args)
+                and (request.args.get("simulate") == "true")
+                and (len(wrongquotes) == 0)
         ):
             wrongquotes.append(
                 {
@@ -83,8 +80,9 @@ def api_wrongquotes():
         )
         return jsonify(wrongquote.get_dict())
 
+
 @api.route("/wrongquotes/random", methods=["GET"])
-def api_wrongquote():
+def api_wrongquotes_random():
     min_rating = 0
     if "min_rating" in request.args:
         min_rating = request.args.get("min_rating", int)
@@ -102,6 +100,7 @@ def api_wrongquote():
         count = request.args.get("count", int)
 
     return jsonify(wrongquotes[0:count])
+
 
 @api.route("/wrongquotes/<int:pk>", methods=["GET", "POST"])
 def api_wrongquotes_id(pk):

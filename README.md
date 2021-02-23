@@ -8,16 +8,12 @@ https://zitate.prapsschnalinen.de
 
 | Methode | URI              | Parameter| Beschreibung |
 |---------|-----             |---       |--------------|
-|GET      | /api/wrongquote/random | quote(id), author(id), simulate, no_text | Falschzugeordnete Zitate bekommen |
+|GET      | /api/wrongquotes | quote(id), author(id), simulate, no_text | Falschzugeordnete Zitate bekommen |
 |POST     | /api/wrongquotes | quote(id), author(id) | Ein neues Falschzugeordnetes Zitat erstellen |
 |GET      | /api/wrongquotes/[id]|                   |Ein falschzugeordnetes Zitat bekommen |
 |POST     | /api/wrongquotes/[id]| vote              | Ein falschzugeordnetes Zitat bewerten |
 |GET      | /api/wrongquotes/count|                  | Anzahl der falschzugeordneten Zitate bekommen |
-
-#### api/wrongquote
-| Methode | URI              | Parameter| Beschreibung |
-|---------|-----             |---       |--------------|
-|GET      | /api/wrongquote | min_rating, count | Zufällige falschzugeordnete Zitate bekommen |
+|GET      | /api/wrongquotes/random | min_rating, count | Zufällige falschzugeordnete Zitate bekommen |
 
 #### api/quotes
 |Methode | URI | Parameter | Beschreibung |
