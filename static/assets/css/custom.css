@@ -17,17 +17,10 @@
 
 html, body {
   height: 100%;
-  background-color: #111111;
 }
 
 nav {
-    background: #202020;
-    color: #bebebe;
-}
-
-.card {
-    background: #202020;
-    color: #bebebe;
+  color: #202020;
 }
 
 #wrap {
@@ -50,4 +43,17 @@ nav {
 .form-group {
     margin-left: 25%;
     margin-right: 25%;
+}
+
+@media (prefers-color-scheme: dark) {
+    html, body {
+	background-color: #111111;
+    }    
+    .card, nav {
+	color: #bebebe;
+	background: #202020;
+    }
+    .nav-link {
+	color:#bebebe;
+    }
 }

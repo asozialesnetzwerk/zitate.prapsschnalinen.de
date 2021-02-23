@@ -1,16 +1,19 @@
-from db import Quote
+from db import WrongQuote
+import csv
 
-with open("quotes.txt") as f:
-    file = f.readlines()
+with open("zitate.csv") as f:
+    reader = csv.reader(f, delimiter=",", quotechar='"') 
     a = 0
-    for line in file:
+    for line in reader:
         print(a)
         a += 1
-        quote, new_author, real_author = line.strip().split(" - ")
-        Quote.create(
-            quote=quote,
-            new_author=new_author,
-            real_author=real_author,
-            contributed_by="Marc-Uwe Kling",
+        quote, new_author, real_author = line 
+        print(quote, new_author)
+        WrongQuote.get_or_create(
+            quote=quote.strip(),
+            wrongauthor=new_author.strip(),
+            realauthor=real_author.strip(),
+            contributed_by="asozialesnetzwerk.github.io",
             checked=True,
+            rating=1
         )

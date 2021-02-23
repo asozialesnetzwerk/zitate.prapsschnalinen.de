@@ -1,5 +1,5 @@
 import os
-from random import choice
+from random import choice, shuffle
 from flask import Flask
 from flask import (
     session,
@@ -29,6 +29,7 @@ def create_app(test_config=None):
 
     from db import WrongQuote, Quote, Author
     from api import api
+
     app.register_blueprint(api)
 
     @app.route("/hello")
@@ -44,17 +45,27 @@ def create_app(test_config=None):
         final_quotes = []
         for quote in quotes:
             if quote.showed != quotes[-1].showed and not (
-                ("votes" in session)
-                and (quote._pk in session["votes"])
+                ("votes" in session) and (quote._pk in session["votes"])
             ):
                 final_quotes.append(quote)
 
         if len(final_quotes) == 1:
-            final_quotes.append(choice(final_quotes))
-            session['votes'] = []
+            final_quotes.append(choice(quotes))
+            session["votes"] = []
         elif len(final_quotes) == 0:
             final_quotes = quotes
-            session['votes'] = []
+            session["votes"] = []
+
+        shuffle(final_quotes)
+        for quote in final_quotes[:100]:
+            if quote.showed > 5 and quote.voted / quote.showed > 0.5:
+                final_quotes.append(quote)
+            elif quote.showed <= 5:
+                final_quotes.append(quote)
+
+            if quote.showed > 15 and quote.voted / quote.showed < 0.1:
+                quote.delete_instance()
+                final_quotes.remove(quote)
 
         zit1 = choice(final_quotes)
         zit2 = choice(final_quotes)
@@ -79,41 +90,70 @@ def create_app(test_config=None):
             not_voted_quote = WrongQuote.get_by_id(int(not_voted))
             not_voted_quote.showed += 1
             not_voted_quote.save()
-            if 'votes' not in session:
-                session['votes'] = []
+            if "votes" not in session:
+                session["votes"] = []
             session["votes"] += [int(voted), int(not_voted)]
         return redirect("/")
 
     @app.route("/einreichen", methods=("GET", "POST"))
     def einreichen():
         g.page = "einreichen"
-        g.email = session["email"] if 'email' in session else ''
+        g.email = session["email"] if "email" in session else ""
         if request.method == "POST":
             quote = request.form["quote"].strip()
             new_author = request.form["wrongauthor"].strip()
-            real_author = request.form['realauthor'].strip()
-            contributed_by = request.form['email']
+            real_author = request.form["realauthor"].strip()
+            contributed_by = request.form["email"]
             if real_author not in [a.author for a in Author.select()]:
-                real_author_db = Author.create(author=real_author, contributed_by=contributed_by)
+                real_author_db = Author.create(
+                    author=real_author, contributed_by=contributed_by
+                )
             else:
                 real_author_db = Author.get(Author.author == real_author)
             if quote not in [q.quote for q in Quote.select()]:
-                quote_db = Quote.create(quote=quote, author=real_author_db, contributed_by=contributed_by)
+                quote_db = Quote.create(
+                    quote=quote, author=real_author_db, contributed_by=contributed_by
+                )
             else:
                 quote_db = Quote.get(Quote.quote == quote)
             if new_author not in [a.author for a in Author.select()]:
-                new_author_db = Author.create(author=new_author, contributed_by=contributed_by)
+                new_author_db = Author.create(
+                    author=new_author, contributed_by=contributed_by
+                )
             else:
                 new_author_db = Author.get(Author.author == new_author)
-            WrongQuote.create(quote=quote_db,
-                              author=new_author_db,
-                              contributed_by=contributed_by)
+            WrongQuote.create(
+                quote=quote_db, author=new_author_db, contributed_by=contributed_by
+            )
             flash(
                 "Dein Zitat wurde gespeichert! Sobald ich es überprüft hab, wird es Öffentlich sein."
             )
-            session['email'] = request.form["email"]
+            session["email"] = request.form["email"]
             return redirect("/einreichen")
         return render_template("einreichen.html")
+
+    @app.route("/rss")
+    def rss():
+        g.page = "top"
+
+        def get_sorting_factor(thing):
+            if thing.showed == 0:
+                return 0
+            return thing.voted / thing.showed
+
+        quotes = sorted(
+            list(WrongQuote.select()),
+            key=lambda quote: quote.voted / quote.showed if quote.showed != 0 else 0,
+            reverse=True,
+        )
+        g.quotes = [
+            (
+                f'"{quote.quote.quote}" - {quote.author.author}',
+                round(get_sorting_factor(quote) * 100), quote._pk
+            )
+            for quote in quotes[:5]
+        ]
+        return render_template("top.rss")
 
     @app.route("/top")
     def top():
@@ -176,12 +216,12 @@ def create_app(test_config=None):
         g.votes = 0
         g.shows = 0
         g.quotes = 0
-        quotes = list(Quote.select())
+        quotes = list(WrongQuote.select())
         for quote in quotes:
-            g.votes += quote.votes
-            g.shows += quote.shows
+            g.votes += quote.voted
+            g.shows += quote.showed
             g.quotes += 1
-        g.shows = g.shows/len(quotes)
+        g.shows = g.shows / len(quotes)
         return render_template("stats.html")
 
     @app.route("/removecookies")
