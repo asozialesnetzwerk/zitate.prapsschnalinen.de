@@ -1,4 +1,4 @@
-# Falsch Zugeordnete Zitate
+# Falschzugeordnete Zitate
 
 https://zitate.prapsschnalinen.de
 
@@ -8,11 +8,16 @@ https://zitate.prapsschnalinen.de
 
 | Methode | URI              | Parameter| Beschreibung |
 |---------|-----             |---       |--------------|
-|GET      | /api/wrongquotes | quote(id), author(id), simulate | Falschzugeordneten Zitate bekommen |
+|GET      | /api/wrongquotes | quote(id), author(id), simulate, no_text | Falschzugeordnete Zitate bekommen |
 |POST     | /api/wrongquotes | quote(id), author(id) | Ein neues Falschzugeordnetes Zitat erstellen |
-|GET      | /api/wrongquotes/[id]|                   |Ein Falschzugeordnetes Zitat bekommen |
-|POST     | /api/wrongquotes/[id]| vote              | Am Falschzugeordneten Zitat voted |
-|GET      | /api/wrongquotes/count|                  | Anzahl der Falschzugeordneten Zitate bekommen |
+|GET      | /api/wrongquotes/[id]|                   |Ein falschzugeordnetes Zitat bekommen |
+|POST     | /api/wrongquotes/[id]| vote              | Ein falschzugeordnetes Zitat bewerten |
+|GET      | /api/wrongquotes/count|                  | Anzahl der falschzugeordneten Zitate bekommen |
+
+#### api/wrongquote
+| Methode | URI              | Parameter| Beschreibung |
+|---------|-----             |---       |--------------|
+|GET      | /api/wrongquote | min_rating, count | Zufällige falschzugeordnete Zitate bekommen |
 
 #### api/quotes
 |Methode | URI | Parameter | Beschreibung |
@@ -26,7 +31,7 @@ https://zitate.prapsschnalinen.de
 
 |Methode | URI | Parameter | Beschreibung |
 |--------|-----|-----------|--------------|
-|GET | /api/authors | | Autoren bekommen |
+|GET | /api/authors | | Alle Autoren bekommen |
 |POST| /api/authors | author | Autor erstellen |
-|GET| /api/authors/[id]| | Ein Autor bekommen |
+|GET| /api/authors/[id]| | Einen Autor bekommen |
 |GET | /api/authors/count| |Anzahl der Autoren bekommen|

@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from db import WrongQuote, Quote, Author
+import random
 
 api = Blueprint("/api", __name__, url_prefix="/api")
 
@@ -7,6 +8,7 @@ api = Blueprint("/api", __name__, url_prefix="/api")
 @api.route("/")
 def docs():
     d = (
+        "GET /wrongquote [min_rating: &ltmin_rating&gt ; count: &ltcount&gt] - get a random wrongquote<br><br>"
         "GET /wrongquotes - get all wronguotes <br>"
         "GET /wrongquotes/&ltid&gt - get wrongquote from id <br>"
         "GET /wrongquotes/count - get wrongquote count <br>"
@@ -15,13 +17,16 @@ def docs():
         "GET /quotes - get all quotes <br>"
         "GET /quotes/&ltid&gt - get quote from id <br>"
         "GET /quotes/count - get quote count <br>"
-        "POST /quotes [quote: &ltquote&gt ; author: &ltauthor_id&gt] - add a quote to db <br><br>"
+        "POST /quotes [quote: &ltquote&gt ; author: &ltauthor_id&gt] - add a quote to db<br><br>"
         "GET /authors - get all authors <br>"
         "GET /authors/&ltid&gt - get author from id <br>"
         "GET /authors/count - get author count <br>"
         "POST /authors [author: &ltauthor&gt] - add new author to db "
     )
     return d
+
+
+
 
 
 @api.route("/wrongquotes", methods=["GET", "POST"])
@@ -43,8 +48,14 @@ def api_wrongquotes():
             )
         else:
             selected = WrongQuote.select()
+        no_text = "no_text" in request.args and request.args.get("no_text", bool)
         for wrongquote in selected:
-            wrongquotes.append(wrongquote.get_dict())
+            wq_dict = wrongquote.get_dict()
+            if no_text:
+                del wq_dict["author"]["author"]
+                del wq_dict["quote"]["quote"]
+                del wq_dict["quote"]["author"]["author"]
+            wrongquotes.append(wq_dict)
         if (
             ("simulate" in request.args)
             and ("author" in request.args)
@@ -72,6 +83,25 @@ def api_wrongquotes():
         )
         return jsonify(wrongquote.get_dict())
 
+@api.route("/wrongquotes/random", methods=["GET"])
+def api_wrongquote():
+    min_rating = 0
+    if "min_rating" in request.args:
+        min_rating = request.args.get("min_rating", int)
+
+    selected = WrongQuote.select().where(WrongQuote.rating >= min_rating)
+
+    wrongquotes = []
+    for wrongquote in selected:
+        wrongquotes.append(wrongquote.get_dict())
+
+    random.shuffle(wrongquotes)
+
+    count = 1
+    if "count" in request.args:
+        count = request.args.get("count", int)
+
+    return jsonify(wrongquotes[0:count])
 
 @api.route("/wrongquotes/<int:pk>", methods=["GET", "POST"])
 def api_wrongquotes_id(pk):
