@@ -48,7 +48,7 @@ def api_wrongquotes():
             )
         else:
             selected = WrongQuote.select()
-        no_text = "no_text" in request.args and request.args.get("no_text", bool)
+        no_text = ("no_text" in request.args) and (request.args.get("no_text") == "true")
         for wrongquote in selected:
             wq_dict = wrongquote.get_dict()
             if no_text:
@@ -99,7 +99,7 @@ def api_wrongquote():
 
     count = 1
     if "count" in request.args:
-        count = request.args.get("count", int)
+        count = int(request.args.get("count", int))
 
     return jsonify(wrongquotes[0:count])
 
