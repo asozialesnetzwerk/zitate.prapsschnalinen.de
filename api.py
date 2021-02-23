@@ -25,25 +25,8 @@ def docs():
     )
     return d
 
-@api.route("/wrongquote", method=["GET"])
-def api_wrongquote():
-    min_rating = 1
-    if "min_rating" in request.args:
-        min_rating = request.args.get("min_rating", int)
 
-    selected = WrongQuote.select().where(WrongQuote.rating >= min_rating)
 
-    wrongquotes = []
-    for wrongquote in selected:
-        wrongquotes.append(wrongquote.get_dict())
-
-    random.shuffle(wrongquotes)
-
-    count = 1
-    if "count" in request.args:
-        count = request.args.get("count", int)
-
-    return jsonify(wrongquotes[0:count])
 
 
 @api.route("/wrongquotes", methods=["GET", "POST"])
@@ -65,7 +48,7 @@ def api_wrongquotes():
             )
         else:
             selected = WrongQuote.select()
-        no_text = "quote" in request.args and request.args.get("quote", bool)
+        no_text = "no_text" in request.args and request.args.get("no_text", bool)
         for wrongquote in selected:
             wq_dict = wrongquote.get_dict()
             if no_text:
@@ -100,6 +83,25 @@ def api_wrongquotes():
         )
         return jsonify(wrongquote.get_dict())
 
+@api.route("/wrongquotes/random", methods=["GET"])
+def api_wrongquote():
+    min_rating = 0
+    if "min_rating" in request.args:
+        min_rating = request.args.get("min_rating", int)
+
+    selected = WrongQuote.select().where(WrongQuote.rating >= min_rating)
+
+    wrongquotes = []
+    for wrongquote in selected:
+        wrongquotes.append(wrongquote.get_dict())
+
+    random.shuffle(wrongquotes)
+
+    count = 1
+    if "count" in request.args:
+        count = request.args.get("count", int)
+
+    return jsonify(wrongquotes[0:count])
 
 @api.route("/wrongquotes/<int:pk>", methods=["GET", "POST"])
 def api_wrongquotes_id(pk):
