@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, redirect
 from db import WrongQuote, Quote, Author
 import random
 
@@ -7,23 +7,7 @@ api = Blueprint("/api", __name__, url_prefix="/api")
 
 @api.route("/")
 def docs():
-    d = (
-        "GET /wrongquotes - get all wronguotes <br>"
-        "GET /wrongquotes/&ltid&gt - get wrongquote from id <br>"
-        "GET /wrongquotes/count - get wrongquote count <br>"
-        "GET /wrongquotes/random [min_rating: &ltmin_rating&gt ; count: &ltcount&gt] - get a random wrongquote<br>"
-        "POST /wrongquotes [quote: &ltquote_id&gt ; author: &ltauthor_id&gt ; contributed_by ; &ltcontributed_by&gt] - "
-        "add wrongquote to db <br><br>"
-        "GET /quotes - get all quotes <br>"
-        "GET /quotes/&ltid&gt - get quote from id <br>"
-        "GET /quotes/count - get quote count <br>"
-        "POST /quotes [quote: &ltquote&gt ; author: &ltauthor_id&gt] - add a quote to db<br><br>"
-        "GET /authors - get all authors <br>"
-        "GET /authors/&ltid&gt - get author from id <br>"
-        "GET /authors/count - get author count <br>"
-        "POST /authors [author: &ltauthor&gt] - add new author to db "
-    )
-    return d
+    return redirect("https://codeberg.org/ulpa/falsch-zugeordnete-zitate#api")
 
 
 @api.route("/wrongquotes", methods=["GET", "POST"])
