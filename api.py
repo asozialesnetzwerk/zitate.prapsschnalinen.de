@@ -4,6 +4,7 @@ import random
 
 api = Blueprint("/api", __name__, url_prefix="/api")
 
+
 @api.route("/")
 def docs():
     return redirect("https://codeberg.org/ulpa/falsch-zugeordnete-zitate#api")
@@ -13,11 +14,13 @@ def docs():
 def api_wrongquotes():
     if request.method == "GET":
         wrongquotes = []
-        sortkeys = {"random": lambda model: random.random(),
+        sortkeys = {
+            "random": lambda model: random.random(),
             "quote": lambda model: model.quote.quote,
             "author": lambda model: model.author.author,
-            "score": lambda model: model.get_score()}
-        
+            "score": lambda model: model.get_score(),
+        }
+
         # Select Quotes from db
         if ("quote" in request.args) and ("author" in request.args):
             selected = WrongQuote.select().where(
@@ -38,9 +41,17 @@ def api_wrongquotes():
         no_text = ("no_text" in request.args) and (
             request.args.get("no_text") == "true"
         )
-        sortkey = sortkeys[request.args.get("sort")] if "sort" in request.args else sortkeys["quote"]
+        sortkey = (
+            sortkeys[request.args.get("sort")]
+            if "sort" in request.args
+            else sortkeys["quote"]
+        )
 
-        for wrongquote in sorted(selected, key=sortkey)[:int(request.args.get("count")) if "count" in request.args else len(selected)]:
+        for wrongquote in sorted(selected, key=sortkey)[
+            : int(request.args.get("count"))
+            if "count" in request.args
+            else len(selected)
+        ]:
             if (
                 (
                     request.args.get("search").lower()
@@ -48,13 +59,14 @@ def api_wrongquotes():
                 )
                 if "search" in request.args
                 else True
-            ):
+            ) and (wrongquote.get_score() >= int(request.args.get("min_score"))) if "min_score" in request.args else True:
                 wq_dict = wrongquote.get_dict()
                 if no_text:
                     del wq_dict["author"]["author"]
                     del wq_dict["quote"]["quote"]
                     del wq_dict["quote"]["author"]["author"]
                 wrongquotes.append(wq_dict)
+        # Simulate existing quote 
         if (
             ("simulate" in request.args)
             and ("author" in request.args)
@@ -74,6 +86,7 @@ def api_wrongquotes():
                 }
             )
         return jsonify(wrongquotes)
+
     elif request.method == "POST":
         wrongquote = WrongQuote.create(
             quote=Quote.get_by_id(int(request.form["quote"])),

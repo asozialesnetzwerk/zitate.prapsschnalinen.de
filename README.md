@@ -8,7 +8,7 @@ https://zitate.prapsschnalinen.de
 
 | Methode | URI              | Parameter| Beschreibung |
 |---------|-----             |---       |--------------|
-|GET      | /api/wrongquotes | quote(id), author(id), simulate, no_text, sort[author, quote, score, random], search, count | Falschzugeordnete Zitate bekommen |
+|GET      | /api/wrongquotes | quote(id), author(id), simulate, no_text, sort[author, quote, score, random], search, count, min_score | Falschzugeordnete Zitate bekommen |
 |POST     | /api/wrongquotes | quote(id), author(id) | Ein neues Falschzugeordnetes Zitat erstellen |
 |GET      | /api/wrongquotes/[id]|                   |Ein falschzugeordnetes Zitat bekommen |
 |POST     | /api/wrongquotes/[id]| vote              | Ein falschzugeordnetes Zitat bewerten |

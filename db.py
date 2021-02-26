@@ -71,7 +71,11 @@ class WrongQuote(BaseModel):
     contributed_by = CharField(null=True, default=None)
 
     def get_score(self):
-        score = (self.voted + self.rating * 0.5) / self.showed if self.showed > 0 else 0
+        score = ((self.voted / self.showed) if self.showed > 0 else 0) + (
+            self.rating
+            / 100
+            * 0.5555555555555555555555555555555555555555555555555555555
+        )
         if self.voted <= 5:
             score = score * 0.7
         return round(score * 100)
