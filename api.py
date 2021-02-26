@@ -29,20 +29,30 @@ def api_wrongquotes():
             )
         else:
             selected = WrongQuote.select()
-        no_text = ("no_text" in request.args) and (request.args.get("no_text") == "true")
+        no_text = ("no_text" in request.args) and (
+            request.args.get("no_text") == "true"
+        )
         for wrongquote in selected:
-            wq_dict = wrongquote.get_dict()
-            if no_text:
-                del wq_dict["author"]["author"]
-                del wq_dict["quote"]["quote"]
-                del wq_dict["quote"]["author"]["author"]
-            wrongquotes.append(wq_dict)
+            if (
+                (
+                    request.args.get("search").lower()
+                    in wrongquote.quote.quote + wrongquote.author.author
+                )
+                if "search" in request.args
+                else True
+            ):
+                wq_dict = wrongquote.get_dict()
+                if no_text:
+                    del wq_dict["author"]["author"]
+                    del wq_dict["quote"]["quote"]
+                    del wq_dict["quote"]["author"]["author"]
+                wrongquotes.append(wq_dict)
         if (
-                ("simulate" in request.args)
-                and ("author" in request.args)
-                and ("quote" in request.args)
-                and (request.args.get("simulate") == "true")
-                and (len(wrongquotes) == 0)
+            ("simulate" in request.args)
+            and ("author" in request.args)
+            and ("quote" in request.args)
+            and (request.args.get("simulate") == "true")
+            and (len(wrongquotes) == 0)
         ):
             wrongquotes.append(
                 {

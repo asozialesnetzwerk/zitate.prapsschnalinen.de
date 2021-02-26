@@ -136,20 +136,16 @@ def create_app(test_config=None):
     def rss():
         g.page = "top"
 
-        def get_sorting_factor(thing):
-            if thing.showed == 0:
-                return 0
-            return thing.voted / thing.showed
-
         quotes = sorted(
             list(WrongQuote.select()),
-            key=lambda quote: quote.voted / quote.showed if quote.showed != 0 else 0,
+            key=lambda quote: quote.get_score(),
             reverse=True,
         )
         g.quotes = [
             (
                 f'"{quote.quote.quote}" - {quote.author.author}',
-                round(get_sorting_factor(quote) * 100), quote._pk
+                quote.get_score(),
+                quote._pk,
             )
             for quote in quotes[:5]
         ]
@@ -159,20 +155,15 @@ def create_app(test_config=None):
     def top():
         g.page = "top"
 
-        def get_sorting_factor(thing):
-            if thing.showed == 0:
-                return 0
-            return thing.voted / thing.showed
-
         quotes = sorted(
             list(WrongQuote.select()),
-            key=lambda quote: quote.voted / quote.showed if quote.showed != 0 else 0,
+            key=lambda quote: quote.get_score(),
             reverse=True,
         )
         g.quotes = [
             (
                 f'"{quote.quote.quote}" - {quote.author.author}',
-                round(get_sorting_factor(quote) * 100),
+                quote.get_score(),
             )
             for quote in quotes[:5]
         ]
@@ -182,20 +173,15 @@ def create_app(test_config=None):
     def topall():
         g.page = "top"
 
-        def get_sorting_factor(thing):
-            if thing.showed == 0:
-                return 0
-            return thing.voted / thing.showed
-
         quotes = sorted(
             list(WrongQuote.select()),
-            key=lambda quote: quote.voted / quote.showed if quote.showed != 0 else 0,
+            key=lambda quote: quote.get_score(),
             reverse=True,
         )
         g.quotes = [
             (
                 f'"{quote.quote.quote}" - {quote.author.author}',
-                round(get_sorting_factor(quote) * 100),
+                round(quote.get_score() * 100),
             )
             for quote in quotes
         ]
