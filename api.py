@@ -40,7 +40,7 @@ def api_wrongquotes():
         )
         sortkey = sortkeys[request.args.get("sort")] if "sort" in request.args else sortkeys["quote"]
 
-        for wrongquote in sorted(selected, key=sortkey):
+        for wrongquote in sorted(selected, key=sortkey)[:int(request.args.get("count")) if "count" in request.args else len(selected)]:
             if (
                 (
                     request.args.get("search").lower()
