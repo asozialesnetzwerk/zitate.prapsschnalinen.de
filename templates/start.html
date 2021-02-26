@@ -5,12 +5,32 @@
     <div class="card-body">
         <h5 class="card-title">Welches Zitat ist witziger?</h5>
         <div class="card-text">
-    <form action="/abstimmung" method="post" id="form">
-        <input type="radio" id="zit1" name="zit" value="{{g.zit1id}}-{{g.zit2id}}"><label for="zit1">&nbsp;{{g.zit1text}}</label></input><br>
-        <br>
-        <input type="radio" id="zit2" name="zit" value="{{g.zit2id}}-{{g.zit1id}}"><label for="zit2">&nbsp;{{g.zit2text}}</label><br>
-        <button type="submit" value="ok" class="btn btn-danger voteSubmit">OK</button>
-    </form>
-            </div>
+            <form action="/abstimmung" method="post" id="form">
+                <input type="radio" id="zit1" class="quote-radio" name="zit" value="{{ g.zit1id }}-{{ g.zit2id }}">
+                <label for="zit1">
+                    {{ g.zit1q }}
+                    <br>
+                    - {{ g.zit1a }}
+                </label>
+                <br><br>
+                <input type="radio" id="zit2" class="quote-radio" name="zit" value="{{ g.zit2id }}-{{ g.zit1id }}">
+                <label for="zit2">
+                    {{ g.zit2q }}
+                    <br>
+                    - {{ g.zit2a }}
+                </label>
+                <br>
+                <button type="submit" value="ok" class="btn btn-danger voteSubmit">OK</button>
+            </form>
         </div>
+    </div>
+    <style>
+    #form {
+        top: 50%;
+    }
+    .quote-radio {
+        transform: translateY(-50%);
+    }
+    </style>
+
 {% endblock %}

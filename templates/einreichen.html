@@ -3,23 +3,23 @@
 {% block content %}
     <h5 class="card-header">Zitat hinzufügen</h5>
     <div class="card-body">
-    <h5 class="card-title">Was ist dein Lieblings-Falsch-zugeordnetes-Zitat?</h5>
-    <!--div class="anmerkung">Wenn du danach zur Startseite weitergeleitet wirst, hat alles geklappt.</div>
+        <h5 class="card-title">Was ist dein witzigstes falschzugeordnetes Zitat?</h5>
+        <!--div class="anmerkung">Wenn du danach zur Startseite weitergeleitet wirst, hat alles geklappt.</div>
     <dic class="anmerkung"><a href="{{ url_for('zitate') }}">Hier</a> sind alle Zitate aufgelistet, guck bitte vorher ob es nicht schon da ist.</dic-->
-    <div class="card-text">
-        <form method="post" class="form-group">
-            <div class="form-check">
-                <label for="quote">Zitat</label>
-                <input class="form-control" name="quote" id="quote" required><br>
-                <label for="wrongauthor">Falscher Autor</label>
-                <input class="form-control" name="wrongauthor" id="wrongauthor" required><br>
-                <label for="realauthor">Eigentlicher Autor</label>
-                <input class="form-control" name="realauthor" id="realauthor" required><br>
-                <label for="email">Deine E-Mail Adresse</label>
-                <input class="form-control" name="email" id="email" autocomplete="off" value="{{g.email}}"><br>
-                <input type="submit" value="Einreichen">
-            </div>
-        </form>
-    </div>
+        <div class="card-text">
+            <form method="post" class="form-group">
+                <div class="form-check">
+                    <label for="quote">Zitat</label>
+                    <input class="form-control" name="quote" id="quote" required><br>
+                    <label for="wrongauthor">Falscher Autor</label>
+                    <input class="form-control" name="wrongauthor" id="wrongauthor" required><br>
+                    <label for="realauthor">Eigentlicher Autor</label>
+                    <input class="form-control" name="realauthor" id="realauthor" required><br>
+                    <label for="email">Deine E-Mail-Adresse</label>
+                    <input class="form-control" name="email" id="email" autocomplete="off" value="{{ g.email }}"><br>
+                    <input type="submit" value="Einreichen">
+                </div>
+            </form>
         </div>
+    </div>
 {% endblock %}
