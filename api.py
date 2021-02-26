@@ -4,7 +4,6 @@ import random
 
 api = Blueprint("/api", __name__, url_prefix="/api")
 
-
 @api.route("/")
 def docs():
     return redirect("https://codeberg.org/ulpa/falsch-zugeordnete-zitate#api")
@@ -14,6 +13,12 @@ def docs():
 def api_wrongquotes():
     if request.method == "GET":
         wrongquotes = []
+        sortkeys = {"random": lambda model: random.random(),
+            "quote": lambda model: model.quote.quote,
+            "author": lambda model: model.author.author,
+            "score": lambda model: model.get_score()}
+        
+        # Select Quotes from db
         if ("quote" in request.args) and ("author" in request.args):
             selected = WrongQuote.select().where(
                 (WrongQuote.author == request.args.get("author"))
@@ -29,10 +34,13 @@ def api_wrongquotes():
             )
         else:
             selected = WrongQuote.select()
+
         no_text = ("no_text" in request.args) and (
             request.args.get("no_text") == "true"
         )
-        for wrongquote in selected:
+        sortkey = sortkeys[request.args.get("sort")] if "sort" in request.args else sortkeys["quote"]
+
+        for wrongquote in sorted(selected, key=sortkey):
             if (
                 (
                     request.args.get("search").lower()
