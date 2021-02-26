@@ -7,17 +7,21 @@
         <div class="card-text">
             <form action="/abstimmung" method="post" id="form">
                 <input type="radio" id="zit1" class="quote-radio" name="zit" value="{{ g.zit1id }}-{{ g.zit2id }}">
-                <label for="zit1">
-                    {{ g.zit1q }}
-                    <br>
-                    - {{ g.zit1a }}
+                <br>
+                <label for="zit1" id="zit1lbl">
+                    <blockquote class="blockquote zit1bq">
+                    "{{ g.zit1q }}"
+                    <cite class="blockquote-footer">{{ g.zit1a }}</cite>
+                    </blockquote>
                 </label>
                 <br><br>
                 <input type="radio" id="zit2" class="quote-radio" name="zit" value="{{ g.zit2id }}-{{ g.zit1id }}">
-                <label for="zit2">
-                    {{ g.zit2q }}
-                    <br>
-                    - {{ g.zit2a }}
+                <br>
+                <label for="zit2" id="zit2lbl">
+                    <blockquote class="blockquote zit2bg">
+                    "{{ g.zit2q }}"
+                    <cite class="blockquote-footer">{{ g.zit2a }}</cite>
+                    </blockquote>
                 </label>
                 <br>
                 <button type="submit" value="ok" class="btn btn-danger voteSubmit">OK</button>
@@ -28,8 +32,14 @@
     #form {
         top: 50%;
     }
-    .quote-radio {
-        transform: translateY(-50%);
+    #zit1:checked ~ .zit1lbl {
+      border:solid;
+    } 
+    #zit2:checked ~ .zit2lbl {
+       border: solid;
+    }
+    .zit2lbl {
+        border: solid;
     }
     </style>
 
