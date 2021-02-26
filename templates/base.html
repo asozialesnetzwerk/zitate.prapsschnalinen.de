@@ -1,67 +1,68 @@
 <!DOCTYPE html>
 <html lang="de">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zitatvoting</title>
+    <title>Falsche Zitate</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/custom.css') }}">
-  </head>
-  <body class="text-center">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg static-to">
+</head>
+<body class="text-center">
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg static-to">
     <div class="container">
-      <a class="navbar-brand" href="/">
-            <img src="{{ url_for('static', filename='/assets/img/ata-logo.png') }}" alt="antiterroranschlag" height="45" width="45">
-            Falsch zugeordnete Zitate
-          </a>
-      <!--button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button-->
-      <div class="collapse navbar-collapse" id="navbarResponsive">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="/">Voting
-                  <span class="sr-only">(current)</span>
-                </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/einreichen">Zitat einreichen</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/zitate">Alle Zitate</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/top">Top Zitate</a>
-          </li>
-        </ul>
-      </div>
+        <a class="navbar-brand" href="/">
+            <img src="{{ url_for('static', filename='/assets/img/ata-logo.png') }}" alt="antiterroranschlag" height="45"
+                 width="45">
+            Falschzugeordnete Zitate
+        </a>
+        <!--button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button-->
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Voting
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/einreichen">Zitat einreichen</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/zitate">Alle Zitate</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/top">Top Zitate</a>
+                </li>
+            </ul>
+        </div>
     </div>
-  </nav>
+</nav>
 
 <div id="wrap">
-  <div id="main" class="container clear-top">
-    {% for message in get_flashed_messages() %}
-        <div class="alert alert-success">{{message}}</div>
-    {% endfor %}
-    <div class="card">
-      {% block content %}
-      <!-- content -->
-      {% endblock%}
+    <div id="main" class="container clear-top">
+        {% for message in get_flashed_messages() %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+        <div class="card">
+            {% block content %}
+                <!-- content -->
+            {% endblock %}
+        </div>
     </div>
-  </div>
 </div>
 
 
+<footer class="footer">
+    <div class="container">
+        <span class="text-muted">« made by ulpa, joshix and klapsenjesus » <br> Diese Seite benutzt Cookies. Guten Appetit.
+          <a href="/removecookies">Entfernen</a>. <br><a href="https://zitate.prapsschnalinen.de/rss">RSS</a> | <a
+                    href="https://zitate.prapsschnalinen.de/api">API</a> </span>
+    </div>
+</footer>
 
-  <footer class="footer">
-      <div class="container">
-        <span class="text-muted">« made by ulpa, joshix1 and klapsenjesus » <br> Diese Seite benutzt Cookies. Guten Appetit.
-          <a href="/removecookies">Entfernen</a>. <br><a href="https://zitate.prapsschnalinen.de/rss">RSS</a> | <a href="https://zitate.prapsschnalinen.de/api">API</a> </span>
-      </div>
-    </footer>
-
-  </body>
+</body>
 </html>
 

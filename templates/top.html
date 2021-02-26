@@ -5,9 +5,9 @@
     <div class="card-body">
         <h5 class="card-title">Die 5 witzigsten Zitate</h5>
         <div class="card-content">
-    {% for quote in g.quotes %}
-<div>{{ quote[0] }}<b> Score: {{ quote[1] }}</b></div>
-    {% endfor %}
+            {% for quote in g.quotes %}
+                <div>{{ quote[0] }}<b> Score: {{ quote[1] }}</b></div>
+            {% endfor %}
         </div>
-        </div>
+    </div>
 {% endblock %}
