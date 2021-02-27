@@ -54,19 +54,24 @@ def api_wrongquotes():
         ]:
             if (
                 (
-                    request.args.get("search").lower()
-                    in wrongquote.quote.quote + wrongquote.author.author
+                    (
+                        request.args.get("search").lower()
+                        in wrongquote.quote.quote + wrongquote.author.author
+                    )
+                    if "search" in request.args
+                    else True
                 )
-                if "search" in request.args
+                and (wrongquote.get_score() >= int(request.args.get("min_score")))
+                if "min_score" in request.args
                 else True
-            ) and (wrongquote.get_score() >= int(request.args.get("min_score"))) if "min_score" in request.args else True:
+            ):
                 wq_dict = wrongquote.get_dict()
                 if no_text:
                     del wq_dict["author"]["author"]
                     del wq_dict["quote"]["quote"]
                     del wq_dict["quote"]["author"]["author"]
                 wrongquotes.append(wq_dict)
-        # Simulate existing quote 
+        # Simulate existing quote
         if (
             ("simulate" in request.args)
             and ("author" in request.args)

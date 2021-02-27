@@ -1,14 +1,7 @@
 import os
 from random import choice, shuffle
 from flask import Flask
-from flask import (
-    session,
-    flash,
-    g,
-    redirect,
-    render_template,
-    request,
-)
+from flask import session, flash, g, redirect, render_template, request, Response
 
 
 def create_app(test_config=None):
@@ -151,7 +144,11 @@ def create_app(test_config=None):
             )
             for quote in quotes[:5]
         ]
-        return render_template("top.rss")
+        return Response(
+            response=render_template("top.rss"),
+            status=200,
+            mimetype="application/rss+xml",
+        )
 
     @app.route("/top")
     def top():
