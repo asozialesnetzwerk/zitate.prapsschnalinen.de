@@ -51,12 +51,12 @@ def create_app(test_config=None):
 
         shuffle(final_quotes)
         for quote in final_quotes[:100]:
-            if quote.showed > 5 and quote.voted / quote.showed > 0.5:
+            if quote.showed > 5 and (quote.voted / quote.showed) > 0.5:
                 final_quotes.append(quote)
             elif quote.showed <= 5:
                 final_quotes.append(quote)
 
-            if quote.showed > 15 and quote.voted / quote.showed < 0.1:
+            if quote.showed > 15 and (quote.voted / quote.showed) < 0.1:
                 quote.delete_instance()
                 final_quotes.remove(quote)
 
