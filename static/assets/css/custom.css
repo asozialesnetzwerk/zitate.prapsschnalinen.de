@@ -45,6 +45,11 @@ nav {
     margin-right: 25%;
 }
 
+.card {
+  max-width: 70ch;
+  margin-left: auto;
+  margin-right: auto;
+}
 @media (prefers-color-scheme: dark) {
     html, body {
 	background-color: #111111;

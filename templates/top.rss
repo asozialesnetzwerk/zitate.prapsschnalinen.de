@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<rss version="2.0">
+
+  <channel>
+    <title>Top 5 Zitate</title>
+    <link>https://zitate.prapsschnalinen.de/</link>
+    <description>Falsch zugeordnete Zitate</description>
+    <language>de-de</language>
+
+    {% for quote in g.quotes %}
+    <item>
+      <title>{{ quote[0] }}</title>
+      <description>{{ quote[0] }}</description>
+      <guid>{{ quote[2] }}</guid>
+      <link>https://zitate.prapsschnalinen.de/</link>
+    </item>
+    {% endfor %}
+  </channel>
+
+</rss>

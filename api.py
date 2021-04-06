@@ -50,13 +50,22 @@ def api_wrongquotes():
             else sortkeys["quote"]
         )
 
-        for wrongquote in sorted(selected, key=sortkey):
+        for wrongquote in sorted(selected, key=sortkey)[
+            : int(request.args.get("count"))
+            if "count" in request.args
+            else len(selected)
+        ]:
             if (
                 (
-                    request.args.get("search").lower()
-                    in wrongquote.quote.quote + wrongquote.author.author
+                    (
+                        request.args.get("search").lower()
+                        in wrongquote.quote.quote + wrongquote.author.author
+                    )
+                    if "search" in request.args
+                    else True
                 )
-                if "search" in request.args
+                and (wrongquote.get_score() >= int(request.args.get("min_score")))
+                if "min_score" in request.args
                 else True
             ):
                 wq_dict = wrongquote.get_dict()
@@ -65,6 +74,7 @@ def api_wrongquotes():
                     del wq_dict["quote"]["quote"]
                     del wq_dict["quote"]["author"]["author"]
                 wrongquotes.append(wq_dict)
+        # Simulate existing quote
         if (
             ("simulate" in request.args)
             and ("author" in request.args)
@@ -84,6 +94,7 @@ def api_wrongquotes():
                 }
             )
         return jsonify(wrongquotes)
+
     elif request.method == "POST":
         wrongquote = WrongQuote.create(
             quote=Quote.get_by_id(int(request.form["quote"])),
@@ -196,3 +207,4 @@ def author(pk):
 @api.route("/authors/count")
 def author_count():
     return jsonify(len(Author.select()))
+

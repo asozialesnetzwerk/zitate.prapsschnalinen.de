@@ -1,14 +1,7 @@
 import os
 from random import choice, shuffle
 from flask import Flask
-from flask import (
-    session,
-    flash,
-    g,
-    redirect,
-    render_template,
-    request,
-)
+from flask import session, flash, g, redirect, render_template, request, Response
 
 
 def create_app(test_config=None):
@@ -74,8 +67,10 @@ def create_app(test_config=None):
 
         g.zit1id = zit1._pk
         g.zit2id = zit2._pk
-        g.zit1text = f'"{zit1.quote.quote}" - {zit1.author.author}'
-        g.zit2text = f'"{zit2.quote.quote}" - {zit2.author.author}'
+        g.zit1q = zit1.quote.quote
+        g.zit1a = zit1.author.author
+        g.zit2q = zit2.quote.quote
+        g.zit2a = zit2.author.author
         return render_template("start.html")
 
     @app.route("/abstimmung", methods=("POST",))
@@ -125,7 +120,7 @@ def create_app(test_config=None):
                 quote=quote_db, author=new_author_db, contributed_by=contributed_by
             )
             flash(
-                "Dein Zitat wurde gespeichert! Sobald ich es überprüft hab, wird es Öffentlich sein."
+                "Dein Zitat wurde gespeichert! Sobald es überprüft worden ist, wird es öffentlich sein."
             )
             session["email"] = request.form["email"]
             return redirect("/einreichen")
@@ -148,7 +143,11 @@ def create_app(test_config=None):
             )
             for quote in quotes[:5]
         ]
-        return render_template("top.rss")
+        return Response(
+            response=render_template("top.rss"),
+            status=200,
+            mimetype="application/rss+xml",
+        )
 
     @app.route("/top")
     def top():
