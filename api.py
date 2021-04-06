@@ -1,8 +1,12 @@
 from flask import Blueprint, jsonify, request, redirect
 from db import WrongQuote, Quote, Author
 import random
+import pickle
 
 api = Blueprint("/api", __name__, url_prefix="/api")
+
+with open("apikeys.pkl", "rb") as f:
+    apikeys = pickle.load(f)
 
 @api.route("/")
 def docs():
@@ -13,11 +17,13 @@ def docs():
 def api_wrongquotes():
     if request.method == "GET":
         wrongquotes = []
-        sortkeys = {"random": lambda model: random.random(),
+        sortkeys = {
+            "random": lambda model: random.random(),
             "quote": lambda model: model.quote.quote,
             "author": lambda model: model.author.author,
-            "score": lambda model: model.get_score()}
-        
+            "score": lambda model: model.get_score(),
+        }
+
         # Select Quotes from db
         if ("quote" in request.args) and ("author" in request.args):
             selected = WrongQuote.select().where(
@@ -38,7 +44,11 @@ def api_wrongquotes():
         no_text = ("no_text" in request.args) and (
             request.args.get("no_text") == "true"
         )
-        sortkey = sortkeys[request.args.get("sort")] if "sort" in request.args else sortkeys["quote"]
+        sortkey = (
+            sortkeys[request.args.get("sort")]
+            if "sort" in request.args
+            else sortkeys["quote"]
+        )
 
         for wrongquote in sorted(selected, key=sortkey):
             if (
@@ -133,11 +143,18 @@ def quotes():
             quotes.append(quote.get_dict())
         return jsonify(quotes)
     elif request.method == "POST":
-        quote = Quote.create(
+        if "id" not in request.form:
+            quote = Quote.create(
             quote=request.form["quote"],
             author=Author.get_by_id(int(request.form["author"])),
-        )
-        return jsonify(quote.get_dict())
+            )
+            return jsonify(quote.get_dict())
+        else:
+            if request.form["key"] in apikeys:
+                quote = Quote.get_by_id(int(request.form["id"]))
+                quote.quote = request.form["quote"]
+                quote.save()
+                return jsonify(quote.get_dict())
 
 
 @api.route("/quotes/<int:pk>")
@@ -153,8 +170,16 @@ def quote_count():
 @api.route("/authors", methods=["GET", "POST"])
 def authors():
     if request.method == "POST":
-        author = Author.create(author=request.form["author"])
-        return jsonify(author.get_dict())
+        if "id" not in request.form:
+            author = Author.create(author=request.form["author"])
+            return jsonify(author.get_dict())
+        else:
+            if request.form["key"] in apikeys:
+                author = Author.get_by_id(request.form["id"])
+                author.author = request.form["author"]
+                author.save()
+                return jsonify(author.get_dict())
+
 
     elif request.method == "GET":
         authors = []
