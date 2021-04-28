@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h5 class="card-header">Falschzugeordnetes Zitat</h5>
+    <div class="card-body">
+        <div class="card-text">
+             <blockquote class="blockquote zit1bq">
+                 "{{ g.quote }}"
+                 <cite class="blockquote-footer">{{ g.author }}</cite>
+             </blockquote>
+            <br><br>
+            <div>
+                Score: {{ g.score }}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
