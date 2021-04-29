@@ -13,7 +13,7 @@
       <title>{{ quote[0] }}</title>
       <description>{{ quote[0] }}</description>
       <guid>{{ quote[2] }}</guid>
-      <link>https://zitate.prapsschnalinen.de/</link>
+      <link>https://zitate.prapsschnalinen.de/{{ quote[2] }}</link>
     </item>
     {% endfor %}
   </channel>

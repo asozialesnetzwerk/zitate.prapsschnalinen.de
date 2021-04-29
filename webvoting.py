@@ -205,6 +205,36 @@ def create_app(test_config=None):
         g.shows = g.shows / len(quotes)
         return render_template("stats.html")
 
+    @app.route("/<int:pk>")
+    def zitat_by_id(pk):
+        wrong_quote = WrongQuote.get_by_id(pk)
+        g.score = wrong_quote.get_score()
+
+        wrong_quote_dict = wrong_quote.get_dict()
+        g.quote = wrong_quote_dict["quote"]["quote"]
+        g.author = wrong_quote_dict["author"]["author"]
+
+        return render_template("zitat.html")
+
+    @app.route("/<int:q>-<int:a>")
+    def zitat_by_ids(q, a):
+        wrong_quote = WrongQuote.select().where(
+            (WrongQuote.author == a)
+            & (WrongQuote.quote == q)
+        )
+
+        if len(wrong_quote) > 1:
+            return redirect("/" + str(wrong_quote[0].id))
+
+        quote = Quote.get_by_id(q).get_dict()
+        g.quote = quote["quote"]
+        author = Author.get_by_id(a).get_dict()
+        g.author = author["author"]
+
+        g.score = "0"
+
+        return render_template("zitat.html")
+
     @app.route("/removecookies")
     def removecookies():
         session.clear()
