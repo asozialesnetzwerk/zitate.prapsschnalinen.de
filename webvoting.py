@@ -38,7 +38,7 @@ def create_app(test_config=None):
         final_quotes = []
         for quote in quotes:
             if quote.showed != quotes[-1].showed and not (
-                ("votes" in session) and (quote._pk in session["votes"])
+                    ("votes" in session) and (quote._pk in session["votes"])
             ):
                 final_quotes.append(quote)
 
@@ -72,6 +72,8 @@ def create_app(test_config=None):
         g.zit1a = zit1.author.author
         g.zit2q = zit2.quote.quote
         g.zit2a = zit2.author.author
+
+        g.url = request.base_url
         return render_template("start.html")
 
     @app.route("/abstimmung", methods=("POST",))
@@ -125,6 +127,7 @@ def create_app(test_config=None):
             )
             session["email"] = request.form["email"]
             return redirect("/einreichen")
+        g.url = request.base_url
         return render_template("einreichen.html")
 
     @app.route("/rss")
@@ -166,6 +169,7 @@ def create_app(test_config=None):
             )
             for quote in quotes[:5]
         ]
+        g.url = request.base_url
         return render_template("top.html")
 
     @app.route("/topall")
@@ -184,6 +188,7 @@ def create_app(test_config=None):
             )
             for quote in quotes
         ]
+        g.url = request.base_url
         return render_template("top.html")
 
     @app.route("/zitate")
@@ -193,6 +198,9 @@ def create_app(test_config=None):
             f'"{quote.quote.quote}" - {quote.author.author}'
             for quote in WrongQuote.select().where(WrongQuote.checked == True)
         ]
+        g.count = len(g.quotes)
+
+        g.url = request.base_url
         return render_template("zitate.html")
 
     @app.route("/stats")
@@ -207,6 +215,7 @@ def create_app(test_config=None):
             g.shows += quote.showed
             g.quotes += 1
         g.shows = g.shows / len(quotes)
+        g.url = request.base_url
         return render_template("stats.html")
 
     @app.route("/<int:pk>")
@@ -217,6 +226,7 @@ def create_app(test_config=None):
         wrong_quote_dict = wrong_quote.get_dict()
         g.quote = wrong_quote_dict["quote"]["quote"]
         g.author = wrong_quote_dict["author"]["author"]
+        g.url = request.base_url
 
         return render_template("zitat.html")
 
@@ -233,8 +243,9 @@ def create_app(test_config=None):
         g.quote = quote["quote"]
         author = Author.get_by_id(a).get_dict()
         g.author = author["author"]
-
         g.score = "0"
+
+        g.url = request.base_url
 
         return render_template("zitat.html")
 

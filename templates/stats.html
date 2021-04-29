@@ -10,3 +10,10 @@
         </div>
     </div>
 {% endblock %}
+
+{% block opengraph %}
+    <meta name="twitter:title" property="og:title" content="Falschzugeordnete Zitate" />
+    <meta name="twitter:description" property="og:description" content="Unsere {{ g.quotes }} Zitate wurden jeweils durchschnittlich {{ g.shows }} mal gezeigt. Insgesamt wurde schon {{ g.votes }} mal abgestimmt." />
+    <meta property="description" content="Unsere {{ g.quotes }} Zitate wurden jeweils durchschnittlich {{ g.shows }} mal gezeigt. Insgesamt wurde schon {{ g.votes }} mal abgestimmt."/>
+    <meta property="og:url" content="{{ g.url }}" />
+{% endblock %}

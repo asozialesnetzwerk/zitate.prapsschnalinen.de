@@ -11,3 +11,10 @@
         </div>
     </div>
 {% endblock %}
+
+{% block opengraph %}
+    <meta name="twitter:title" property="og:title" content="Die 5 witzigsten Zitate" />
+    <meta name="twitter:description" property="og:description" content="Schau dir die fünf witzigsten falschzugeordneten Zitate in unserer Datenbank an." />
+    <meta property="description" content="Schau dir die fünf witzigsten falschzugeordneten Zitate in unserer Datenbank an."/>
+    <meta property="og:url" content="{{ g.url }}" />
+{% endblock %}

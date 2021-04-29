@@ -3,11 +3,18 @@
 {% block content %}
     <h5 class="card-header">Zitatliste</h5>
     <div class="card-body">
-        <h5 class="card-title">Alle Zitate in der Datenbank</h5>
+        <h5 class="card-title">Alle {{ g.count }} Zitate in der Datenbank</h5>
         <div class="card-text">
             {% for quote in g.quotes %}
                 <div>{{ quote }}</div>
             {% endfor %}
         </div>
     </div>
+{% endblock %}
+
+{% block opengraph %}
+    <meta name="twitter:title" property="og:title" content="Falschzugeordnete Zitate" />
+    <meta name="twitter:description" property="og:description" content="Alle {{ g.count }} falschzugeordneten Zitate in unserer Datenbank." />
+    <meta property="description" content="Alle {{ g.count }} falschzugeordneten Zitate in unserer Datenbank."/>
+    <meta property="og:url" content="{{ g.url }}" />
 {% endblock %}
