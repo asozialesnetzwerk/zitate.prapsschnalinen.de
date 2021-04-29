@@ -44,3 +44,10 @@
     </style>
 
 {% endblock %}
+
+{% block opengraph %}
+    <meta name="twitter:title" property="og:title" content="Welches Zitat ist witziger?" />
+    <meta name="twitter:description" property="og:description" content="Vergleiche die Witzigkeit zweier falschzugeordneten Zitate und hilf uns herauszufinden, welches das witzigste falschzugeordnete Zitat ist." />
+    <meta property="description" content="Vergleiche die Witzigkeit zweier falschzugeordneten Zitate und hilf uns herauszufinden, welches das witzigste falschzugeordnete Zitat ist."/>
+    <meta property="og:url" content="{{ g.url }}" />
+{% endblock %}

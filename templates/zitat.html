@@ -16,3 +16,10 @@
     </div>
 
 {% endblock %}
+
+{% block opengraph %}
+    <meta name="twitter:title" property="og:title" content="Falschzugeordnetes Zitat" />
+    <meta name="twitter:description" property="og:description" content="„{{ g.quote}}“ {{ g.author }}" />
+    <meta property="description" content="„{{ g.quote}}“ {{ g.author }}"/>
+    <meta property="og:url" content="{{ g.url }}" />
+{% endblock %}
