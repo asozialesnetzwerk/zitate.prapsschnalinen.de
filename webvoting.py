@@ -7,7 +7,8 @@ from flask import session, flash, g, redirect, render_template, request, Respons
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        SECRET_KEY="dev", DATABASE=os.path.join(app.instance_path, "voting.sqlite"),
+        SECRET_KEY="dev",
+        DATABASE=os.path.join(app.instance_path, "voting.sqlite"),
     )
     if test_config is None:
         app.config.from_pyfile("config.py", silent=True)
@@ -159,7 +160,10 @@ def create_app(test_config=None):
             reverse=True,
         )
         g.quotes = [
-            (f'"{quote.quote.quote}" - {quote.author.author}', quote.get_score(),)
+            (
+                f'"{quote.quote.quote}" - {quote.author.author}',
+                quote.get_score(),
+            )
             for quote in quotes[:5]
         ]
         return render_template("top.html")
@@ -219,8 +223,7 @@ def create_app(test_config=None):
     @app.route("/<int:q>-<int:a>")
     def zitat_by_ids(q, a):
         wrong_quote = WrongQuote.select().where(
-            (WrongQuote.author == a)
-            & (WrongQuote.quote == q)
+            (WrongQuote.author == a) & (WrongQuote.quote == q)
         )
 
         if len(wrong_quote) > 1:

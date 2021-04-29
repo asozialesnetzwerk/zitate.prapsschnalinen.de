@@ -8,6 +8,7 @@ api = Blueprint("/api", __name__, url_prefix="/api")
 with open("apikeys.pkl", "rb") as f:
     apikeys = pickle.load(f)
 
+
 @api.route("/")
 def docs():
     return redirect("https://codeberg.org/ulpa/falsch-zugeordnete-zitate#api")
@@ -156,8 +157,8 @@ def quotes():
     elif request.method == "POST":
         if "id" not in request.form:
             quote = Quote.create(
-            quote=request.form["quote"],
-            author=Author.get_by_id(int(request.form["author"])),
+                quote=request.form["quote"],
+                author=Author.get_by_id(int(request.form["author"])),
             )
             return jsonify(quote.get_dict())
         else:
@@ -191,7 +192,6 @@ def authors():
                 author.save()
                 return jsonify(author.get_dict())
 
-
     elif request.method == "GET":
         authors = []
         for author in Author.select():
@@ -207,4 +207,3 @@ def author(pk):
 @api.route("/authors/count")
 def author_count():
     return jsonify(len(Author.select()))
-
