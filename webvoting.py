@@ -236,7 +236,7 @@ def create_app(test_config=None):
             (WrongQuote.author == a) & (WrongQuote.quote == q)
         )
 
-        if len(wrong_quote) > 1:
+        if len(wrong_quote) > 0:
             return redirect("/" + str(wrong_quote[0].id))
 
         quote = Quote.get_by_id(q).get_dict()
