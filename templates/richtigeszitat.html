@@ -1,0 +1,9 @@
+{% extends "zitat.html" %}
+
+{% block below_quote %}
+    <br><br>
+    Falschzugeordnete Zitate mit dem Zitat:
+    {% for quote in g.quotes %}
+       <div>„{{ quote.quote.quote }}“ - {{ quote.author.author }} (<a href="/{{ quote.id }}">{{ quote.id }}</a>)</div>
+    {% endfor %}
+{% endblock %}
