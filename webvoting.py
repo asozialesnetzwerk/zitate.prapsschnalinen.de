@@ -267,7 +267,7 @@ def create_app(test_config=None):
         g.author = quote["author"]["author"]
         g.aid = quote["author"]["id"]
 
-        g.quotes = WrongQuote.select().where((WrongQuote.checked == True) & (WrongQuote.quote == g.aid))
+        g.quotes = WrongQuote.select().where((WrongQuote.checked == True) & (WrongQuote.quote == g.qid))
 
         g.title = "Richtiges Zitat"
         g.url = request.base_url
