@@ -141,7 +141,7 @@ def create_app(test_config=None):
         )
         g.quotes = [
             (
-                f'"{quote.quote.quote}" - {quote.author.author}',
+                f'„{quote.quote.quote}“ - {quote.author.author}',
                 quote.get_score(),
                 quote._pk,
             )
@@ -164,7 +164,7 @@ def create_app(test_config=None):
         )
         g.quotes = [
             (
-                f'"{quote.quote.quote}" - {quote.author.author}',
+                f'„{quote.quote.quote}“ - {quote.author.author}',
                 quote.get_score(),
             )
             for quote in quotes[:5]
@@ -183,8 +183,8 @@ def create_app(test_config=None):
         )
         g.quotes = [
             (
-                f'"{quote.quote.quote}" - {quote.author.author}',
-                round(quote.get_score() * 100),
+                f'„{quote.quote.quote}“ - {quote.author.author}',
+                quote.get_score(),
             )
             for quote in quotes
         ]
@@ -195,7 +195,7 @@ def create_app(test_config=None):
     def zitate():
         g.page = "zitate"
         g.quotes = [
-            f'"{quote.quote.quote}" - {quote.author.author}'
+            f'„{quote.quote.quote}“ - {quote.author.author}'
             for quote in WrongQuote.select().where(WrongQuote.checked == True)
         ]
         g.count = len(g.quotes)
@@ -219,19 +219,22 @@ def create_app(test_config=None):
         return render_template("stats.html")
 
     @app.route("/<int:pk>")
-    def zitat_by_id(pk):
+    def falsches_zitat_by_id(pk):
         wrong_quote = WrongQuote.get_by_id(pk)
         g.score = wrong_quote.get_score()
 
         wrong_quote_dict = wrong_quote.get_dict()
         g.quote = wrong_quote_dict["quote"]["quote"]
+        g.qid = wrong_quote_dict["quote"]["id"]
         g.author = wrong_quote_dict["author"]["author"]
-        g.url = request.base_url
+        g.aid = wrong_quote_dict["author"]["id"]
 
+        g.title = "Falschzugeordnetes Zitat"
+        g.url = request.base_url
         return render_template("zitat.html")
 
     @app.route("/<int:q>-<int:a>")
-    def zitat_by_ids(q, a):
+    def falsches_zitat_by_ids(q, a):
         wrong_quote = WrongQuote.select().where(
             (WrongQuote.author == a) & (WrongQuote.quote == q)
         )
@@ -241,13 +244,46 @@ def create_app(test_config=None):
 
         quote = Quote.get_by_id(q).get_dict()
         g.quote = quote["quote"]
+        g.qid = q
+
+        if quote["author"]["id"] == a:  # quote is real
+            return redirect("q/" + str(q))
+
         author = Author.get_by_id(a).get_dict()
         g.author = author["author"]
+        g.aid = a
         g.score = "0"
 
-        g.url = request.base_url
+        g.title = "Falschzugeordnetes Zitat"
 
-        return render_template("zitat.html")
+        g.url = request.base_url
+        return render_template("falscheszitat.html")
+
+    @app.route("/q/<int:pk>")
+    def zitat_by_id(pk):
+        quote = Quote.get_by_id(pk).get_dict()
+
+        g.quote = quote["quote"]
+        g.qid = quote["id"]
+        g.author = quote["author"]["author"]
+        g.aid = quote["author"]["id"]
+
+        g.quotes = WrongQuote.select().where((WrongQuote.checked == True) & (WrongQuote.quote == g.aid))
+
+        g.title = "Richtiges Zitat"
+        g.url = request.base_url
+        return render_template("richtigeszitat.html")
+
+    @app.route("/a/<int:pk>")
+    def autor_by_id(pk):
+        author = Author.get_by_id(pk).get_dict()
+
+        g.author = author["author"]
+        g.quotes = WrongQuote.select().where((WrongQuote.checked == True) & (WrongQuote.author == author["id"]))
+
+        g.title = "Autor"
+        g.url = request.base_url
+        return render_template("autor.html")
 
     @app.route("/removecookies")
     def removecookies():

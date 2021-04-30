@@ -1,24 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h5 class="card-header">Falschzugeordnetes Zitat</h5>
+    <h5 class="card-header">{{ g.title }}</h5>
     <div class="card-body">
         <div class="card-text">
-             <blockquote class="blockquote zit1bq">
-                 "{{ g.quote }}"
-                 <cite class="blockquote-footer">{{ g.author }}</cite>
+             <blockquote class="blockquote">
+                 "{{ g.quote }}" (<a href="/q/{{ g.qid }}">{{ g.qid }}</a>)
+                 <cite class="blockquote-footer">{{ g.author }} (<a href="/a/{{ g.aid }}">{{ g.aid }}</a>)</cite>
              </blockquote>
-            <br><br>
-            <div>
-                Score: {{ g.score }}
-            </div>
+            {% block below_quote %}
+            {% endblock %}
         </div>
     </div>
 
 {% endblock %}
 
 {% block opengraph %}
-    <meta name="twitter:title" property="og:title" content="Falschzugeordnetes Zitat" />
+    <meta name="twitter:title" property="og:title" content="{{ g.title }}" />
     <meta name="twitter:description" property="og:description" content="„{{ g.quote}}“ {{ g.author }}" />
     <meta property="description" content="„{{ g.quote}}“ {{ g.author }}"/>
     <meta property="og:url" content="{{ g.url }}" />
