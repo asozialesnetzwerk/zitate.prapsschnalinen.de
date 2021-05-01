@@ -231,7 +231,7 @@ def create_app(test_config=None):
 
         g.title = "Falschzugeordnetes Zitat"
         g.url = request.base_url
-        return render_template("zitat.html")
+        return render_template("falscheszitat.html")
 
     @app.route("/<int:q>-<int:a>")
     def falsches_zitat_by_ids(q, a):
@@ -252,12 +252,11 @@ def create_app(test_config=None):
         author = Author.get_by_id(a).get_dict()
         g.author = author["author"]
         g.aid = a
-        g.score = "0"
 
         g.title = "Falschzugeordnetes Zitat"
 
         g.url = request.base_url
-        return render_template("falscheszitat.html")
+        return render_template("zitat.html")
 
     @app.route("/q/<int:pk>")
     def zitat_by_id(pk):
@@ -268,7 +267,7 @@ def create_app(test_config=None):
         g.author = quote["author"]["author"]
         g.aid = quote["author"]["id"]
 
-        g.quotes = WrongQuote.select().where((WrongQuote.checked == True) & (WrongQuote.quote == g.aid))
+        g.quotes = WrongQuote.select().where((WrongQuote.checked == True) & (WrongQuote.quote == g.qid))
 
         g.title = "Richtiges Zitat"
         g.url = request.base_url
