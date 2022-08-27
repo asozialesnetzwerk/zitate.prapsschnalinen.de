@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <!--h5 class="card-header">Abstimmung</h5-->
+    <div class="card-body">
+        <h5 class="card-title">Womit bestempelst du dieses Zitat?</h5>
+        <div class="card-text">
+            <form action="/abstimmung" method="post" id="form">
+                <!--input type="radio" id="zit1" class="quote-radio" name="zit" value="{{ g.zit1id }}-{{ g.zit2id }}"-->
+		<br>
+                <label for="zit1" id="zit1lbl">
+                    <blockquote class="blockquote zit1bq">
+                    „{{ g.zit1q }}“
+                    <cite class="blockquote-footer">{{ g.zit1a }}</cite>
+                    </blockquote>
+                </label>
+		<br>
+		<button name="witzig" value="{{g.zit1id}}">
+		<img src="https://asozial.org/static/img/StempelWitzigKlein.svg" style="margin:20px">
+		</button>
+		<button name="nichtwitzig" value="{{g.zit1id}}">
+		<img height="39" src="https://asozial.org/static/img/StempelNichtWitzigKlein.svg" style="margin:20px">
+		</button>
+		<br>
+                <!--button type="submit" value="ok" class="btn btn-danger voteSubmit">OK</button-->
+            </form>
+        </div>
+    </div>
+    <style>
+    #form {
+        top: 50%;
+    }
+    #zit1:checked ~ .zit1lbl {
+      border:solid;
+    } 
+    #zit2:checked ~ .zit2lbl {
+       border: solid;
+    }
+    .zit2lbl {
+        border: solid;
+    }
+    </style>
+
+{% endblock %}
+
+{% block opengraph %}
+    <meta name="twitter:title" property="og:title" content="Welches Zitat ist witziger?" />
+    <meta name="twitter:description" property="og:description" content="Vergleiche die Witzigkeit zweier falschzugeordneten Zitate und hilf uns herauszufinden, welches das witzigste falschzugeordnete Zitat ist." />
+    <meta property="description" content="Vergleiche die Witzigkeit zweier falschzugeordneten Zitate und hilf uns herauszufinden, welches das witzigste falschzugeordnete Zitat ist."/>
+    <meta property="og:url" content="{{ g.url }}" />
+<style>
+button {
+	background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
+</style>
+{% endblock %}

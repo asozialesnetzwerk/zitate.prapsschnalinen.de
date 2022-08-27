@@ -1,7 +1,77 @@
 import os
-from random import choice, shuffle
+from random import choice, shuffle, random
 from flask import Flask
 from flask import session, flash, g, redirect, render_template, request, Response
+
+from db import WrongQuote, Quote, Author
+from api import api
+    
+def render_ab():
+    g.page = "start"
+
+    minscore = max(50, session["minscore"] if "minscore" in session else 0)
+    quotes = list(WrongQuote.select().where( (WrongQuote.checked == True) & (WrongQuote.score > minscore) ))
+    if len(quotes) == 0:
+        quotes = list(WrongQuote.select().where(WrongQuote.checked == True))
+    quotes = sorted(quotes, key=lambda quote: quote.showed)
+    final_quotes = []
+    for quote in quotes:
+        if quote.showed != quotes[-1].showed and not (
+                ("votes" in session) and (quote._pk in session["votes"])
+        ):
+            final_quotes.append(quote)
+
+    if len(final_quotes) == 1:
+        final_quotes.append(choice(quotes))
+        session["votes"] = []
+    elif len(final_quotes) == 0:
+        final_quotes = quotes
+        session["votes"] = []
+
+    shuffle(final_quotes)
+    for quote in final_quotes[:100]:
+        if quote.showed > 5 and (quote.voted / quote.showed) > 0.5:
+            final_quotes.append(quote)
+        elif quote.showed <= 5:
+            final_quotes.append(quote)
+
+        if quote.showed > 15 and (quote.voted / quote.showed) < 0.1:
+            quote.delete_instance()
+            final_quotes.remove(quote)
+
+    zit1 = choice(final_quotes)
+    zit2 = choice(final_quotes)
+    while zit1 == zit2:
+        zit2 = choice(final_quotes)
+
+    g.zit1id = zit1._pk
+    g.zit2id = zit2._pk
+    g.zit1q = zit1.quote.quote
+    g.zit1a = zit1.author.author
+    g.zit2q = zit2.quote.quote
+    g.zit2a = zit2.author.author
+
+    g.url = request.base_url
+    return render_template("start.html")
+
+def render_isfunny(minscore):
+    quotes = WrongQuote.select().where(WrongQuote.score > minscore)
+    if len(quotes) == 0:
+        quotes  = WrongQuote.select()
+    valid_quotes = []
+    for quote in quotes:
+        if "votes" in session:
+            if quote._pk in session["votes"]:
+                continue
+        valid_quotes.append(quote)
+    if len(valid_quotes) == 0:
+        valid_quotes  = list(quotes)
+    chosen  = choice(valid_quotes)
+    g.zit1id = chosen._pk
+    g.zit1q  = chosen.quote.quote
+    g.zit1a  = chosen.author.author
+    g.url = request.base_url
+    return render_template("istwitzig.html")
 
 
 def create_app(test_config=None):
@@ -20,8 +90,6 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    from db import WrongQuote, Quote, Author
-    from api import api
 
     app.register_blueprint(api)
 
@@ -31,50 +99,23 @@ def create_app(test_config=None):
 
     @app.route("/", methods=("GET",))
     def start():
-        g.page = "start"
+        if "minscore" not in session:
+            session["minscore"] = 85
+        if "quotenum" not in session:
+            session["quotenum"] = 0
+        if "abshare" not in session:
+            session["abshare"] = 0
 
-        quotes = list(WrongQuote.select().where(WrongQuote.checked == True))
-        quotes = sorted(quotes, key=lambda quote: quote.showed)
-        final_quotes = []
-        for quote in quotes:
-            if quote.showed != quotes[-1].showed and not (
-                    ("votes" in session) and (quote._pk in session["votes"])
-            ):
-                final_quotes.append(quote)
+        session["minscore"] -= 1
+        session["quotenum"] += 1
+        if session["abshare"]<.5:
+            session["abshare"] += .01
 
-        if len(final_quotes) == 1:
-            final_quotes.append(choice(quotes))
-            session["votes"] = []
-        elif len(final_quotes) == 0:
-            final_quotes = quotes
-            session["votes"] = []
+        print(session)
+        if random() < session["abshare"]:
+            return render_ab()
+        return render_isfunny(session["minscore"])
 
-        shuffle(final_quotes)
-        for quote in final_quotes[:100]:
-            if quote.showed > 5 and (quote.voted / quote.showed) > 0.5:
-                final_quotes.append(quote)
-            elif quote.showed <= 5:
-                final_quotes.append(quote)
-
-            if quote.showed > 15 and (quote.voted / quote.showed) < 0.1:
-                quote.delete_instance()
-                final_quotes.remove(quote)
-
-        zit1 = choice(final_quotes)
-        zit2 = choice(final_quotes)
-        while zit1 == zit2:
-            zit1 = choice(final_quotes)
-            zit2 = choice(final_quotes)
-
-        g.zit1id = zit1._pk
-        g.zit2id = zit2._pk
-        g.zit1q = zit1.quote.quote
-        g.zit1a = zit1.author.author
-        g.zit2q = zit2.quote.quote
-        g.zit2a = zit2.author.author
-
-        g.url = request.base_url
-        return render_template("start.html")
 
     @app.route("/abstimmung", methods=("POST",))
     def abstimmung():
@@ -90,6 +131,25 @@ def create_app(test_config=None):
             if "votes" not in session:
                 session["votes"] = []
             session["votes"] += [int(voted), int(not_voted)]
+        elif "witzig" in request.form:
+            try:
+                qid = int(request.form["witzig"])
+            except ValueError:
+                return "ValueError"
+            voted_quote = WrongQuote.get_by_id(qid)
+            voted_quote.rating += 1
+            voted_quote.save()
+        elif "nichtwitzig" in request.form:
+            try:
+                qid = int(request.form["nichtwitzig"])
+            except ValueError:
+                return "ValueError"
+            voted_quote = WrongQuote.get_by_id(qid)
+            voted_quote.rating -= 2
+            voted_quote.save()
+        else:
+            if "minscore" in session:
+                session["minscore"] += 2
         return redirect("/")
 
     @app.route("/einreichen", methods=("GET", "POST"))
@@ -145,7 +205,7 @@ def create_app(test_config=None):
                 quote.get_score(),
                 quote._pk,
             )
-            for quote in quotes[:5]
+            for quote in quotes[:6]
         ]
         return Response(
             response=render_template("top.rss"),
@@ -167,7 +227,7 @@ def create_app(test_config=None):
                 f'„{quote.quote.quote}“ - {quote.author.author}',
                 quote.get_score(),
             )
-            for quote in quotes[:5]
+            for quote in quotes[:6]
         ]
         g.url = request.base_url
         return render_template("top.html")
