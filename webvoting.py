@@ -50,13 +50,14 @@ def create_app(test_config=None):
             session["votes"] = []
 
         shuffle(final_quotes)
-        for quote in final_quotes[:100]:
+        for quote in final_quotes[:]:
+            print(quote)
             if quote.showed > 5 and (quote.voted / quote.showed) > 0.5:
                 final_quotes.append(quote)
             elif quote.showed <= 5:
                 final_quotes.append(quote)
 
-            if quote.showed > 15 and (quote.voted / quote.showed) < 0.1:
+            if quote.showed > 15 and (quote.voted / quote.showed) < 0.2:
                 quote.delete_instance()
                 final_quotes.remove(quote)
 
@@ -195,7 +196,7 @@ def create_app(test_config=None):
     def zitate():
         g.page = "zitate"
         g.quotes = [
-            f'„{quote.quote.quote}“ - {quote.author.author}'
+            (f'„{quote.quote.quote}“ - {quote.author.author}', "/"+str(quote._pk))
             for quote in WrongQuote.select().where(WrongQuote.checked == True)
         ]
         g.count = len(g.quotes)
@@ -214,7 +215,7 @@ def create_app(test_config=None):
             g.votes += quote.voted
             g.shows += quote.showed
             g.quotes += 1
-        g.shows = g.shows / len(quotes)
+        g.shows = round(g.shows / len(quotes))
         g.url = request.base_url
         return render_template("stats.html")
 

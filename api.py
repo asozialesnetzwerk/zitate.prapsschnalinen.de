@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, redirect
 from db import WrongQuote, Quote, Author
+import db
 import random
 import pickle
 
@@ -129,7 +130,10 @@ def api_wrongquotes_random():
 @api.route("/wrongquotes/<int:pk>", methods=["GET", "POST"])
 def api_wrongquotes_id(pk):
     if request.method == "GET":
-        return jsonify(WrongQuote.get_by_id(pk).get_dict())
+        try: 
+            return jsonify(WrongQuote.get_by_id(pk).get_dict())
+        except db.WrongQuoteDoesNotExist:
+            return jsonify({"error":"quote not found"})
     elif request.method == "POST":
         if int(request.form["vote"]) in [-1, 1]:
             wrongquote = WrongQuote.get_by_id(pk)

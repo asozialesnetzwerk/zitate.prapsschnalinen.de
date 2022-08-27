@@ -6,7 +6,7 @@
         <h5 class="card-title">Alle {{ g.count }} Zitate in der Datenbank</h5>
         <div class="card-text">
             {% for quote in g.quotes %}
-                <div>{{ quote }}</div>
+                <a href="{{ quote.1 }}">{{ quote.0 }}</a><br>
             {% endfor %}
         </div>
     </div>
