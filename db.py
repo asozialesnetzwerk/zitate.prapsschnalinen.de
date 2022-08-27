@@ -70,15 +70,21 @@ class WrongQuote(BaseModel):
     checked = BooleanField(default=False)
     contributed_by = CharField(null=True, default=None)
 
+    score  = IntegerField(default=0)
+
     def get_score(self):
         score = ((self.voted / self.showed) if self.showed > 0 else 0) + (
             self.rating
             / 100
-            * 0.5555555555555555555555555555555555555555555555555555555
+            * 0.5
         )
         if self.voted <= 5:
             score = score * 0.7
         return round(score * 100)
+
+    def save(self):
+        self.score = self.get_score()
+        return super().save()
 
     def get_dict(self):
         return {
