@@ -11,7 +11,7 @@ with open("apikeys.pkl", "rb") as f:
 
 @api.route("/")
 def docs():
-    return redirect("https://codeberg.org/ulpa/falsch-zugeordnete-zitate#api")
+    return redirect("https://codeberg.org/uonel/falsch-zugeordnete-zitate#api")
 
 
 @api.route("/wrongquotes", methods=["GET", "POST"])
