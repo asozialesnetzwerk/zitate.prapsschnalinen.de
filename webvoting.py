@@ -1,5 +1,5 @@
 import os
-from random import choice, shuffle, random
+from random import choice, shuffle, random, randint
 from flask import Flask
 from flask import session, flash, g, redirect, render_template, request, Response, url_for, make_response
 
@@ -71,6 +71,8 @@ def render_isfunny(minscore):
     g.zit1q  = chosen.quote.quote
     g.zit1a  = chosen.author.author
     g.url = request.base_url
+    g.deg1 = randint(-20,20)
+    g.deg2 = randint(-20,20)
     return render_template("istwitzig.html")
 
 
