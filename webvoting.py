@@ -1,7 +1,7 @@
 import os
 from random import choice, shuffle, random
 from flask import Flask
-from flask import session, flash, g, redirect, render_template, request, Response
+from flask import session, flash, g, redirect, render_template, request, Response, url_for, make_response
 
 from db import WrongQuote, Quote, Author
 from api import api
@@ -150,7 +150,11 @@ def create_app(test_config=None):
         else:
             if "minscore" in session:
                 session["minscore"] += 2
-        return redirect("/")
+        print(url_for("start"))
+        resp = make_response()
+        resp.location = "https://zitate.prapsschnalinen.de/"
+        resp.status = 302
+        return resp
 
     @app.route("/einreichen", methods=("GET", "POST"))
     def einreichen():

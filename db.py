@@ -82,9 +82,9 @@ class WrongQuote(BaseModel):
             score = score * 0.7
         return round(score * 100)
 
-    def save(self):
+    def save(self, *args, **kwargs):
         self.score = self.get_score()
-        return super().save()
+        return super().save(*args, **kwargs)
 
     def get_dict(self):
         return {
