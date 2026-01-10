@@ -6,7 +6,6 @@
         <h5 class="card-title">Womit bestempelst du dieses Zitat?</h5>
         <div class="card-text">
             <form action="/abstimmung" method="post" id="form">
-                <!--input type="radio" id="zit1" class="quote-radio" name="zit" value="{{ g.zit1id }}-{{ g.zit2id }}"-->
 		<br>
                 <label for="zit1" id="zit1lbl">
                     <blockquote class="blockquote zit1bq">
@@ -16,13 +15,12 @@
                 </label>
 		<br>
 		<button name="witzig" value="{{g.zit1id}}">
-		<img src="https://asozial.org/static/img/StempelWitzigKlein.svg" style="margin:20px;transform:rotate({{g.deg1}}deg);">
+		<img src="https://asozial.org/static/img/stamps/witzig.small.svg" style="margin:20px;transform:rotate({{g.deg1}}deg);">
 		</button>
 		<button name="nichtwitzig" value="{{g.zit1id}}">
-		<img height="39" src="https://asozial.org/static/img/StempelNichtWitzigKlein.svg" style="margin:20px;transform:rotate({{g.deg2}}deg);">
+		<img height="39" src="https://asozial.org/static/img/stamps/nichtwitzig.small.svg" style="margin:20px;transform:rotate({{g.deg2}}deg);">
 		</button>
 		<br>
-                <!--button type="submit" value="ok" class="btn btn-danger voteSubmit">OK</button-->
             </form>
         </div>
     </div>
