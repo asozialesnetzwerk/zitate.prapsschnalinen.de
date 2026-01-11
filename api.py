@@ -50,13 +50,19 @@ def api_wrongquotes():
             )
 
         if sort := request.args.get("sort"):
+            desc = False
+            if sort[0] == "-":
+                sort = sort[1:]
+                desc = True
             sortkeys = {
                 "random": fn.Random(),
-                "quote": WrongQuote.quote.quote,
-                "author": WrongQuote.author.author,
-                "score": WrongQuote.score,
+                "quote": WrongQuote.quote.quote.desc() if desc else WrongQuote.quote.quote,
+                "author": WrongQuote.author.author.desc() if desc else WrongQuote.author.author,
+                "score": WrongQuote.score.desc() if desc else WrongQuote.score,
             }
-            selected = selected.order_by(sortkeys[sort])
+            if sort not in sortkeys:
+                return "Supported orderings: " + ", ".join(list(sortkeys) + [f"-{key}" for key in sortkeys if key != "random"]), 400
+            selected = selected.order_by(sortkeys[sort], WrongQuote.id)
 
         if count := request.args.get("count"):
             selected = selected.limit(int(count))
