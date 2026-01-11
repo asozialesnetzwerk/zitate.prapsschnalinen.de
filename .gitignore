@@ -1,5 +1,5 @@
 venv
 .idea
 apikeys.pkl
-
+__pycache__
 quotes.db
