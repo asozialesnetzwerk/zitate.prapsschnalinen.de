@@ -115,21 +115,22 @@ def api_wrongquotes():
 def api_wrongquotes_random():
     min_rating = 0
     if "min_rating" in request.args:
-        min_rating = request.args.get("min_rating", int)
-
-    selected = WrongQuote.select().where(WrongQuote.rating >= min_rating)
-
-    wrongquotes = []
-    for wrongquote in selected:
-        wrongquotes.append(wrongquote.get_dict())
-
-    random.shuffle(wrongquotes)
+        min_rating = request.args.get("min_rating", default=0, type=int)
 
     count = 1
     if "count" in request.args:
-        count = int(request.args.get("count", int))
+        count = int(request.args.get("count", default=1, type=int))
 
-    return jsonify(wrongquotes[0:count])
+    selected = (
+        WrongQuote.select_all_foreign_keys_resolved()
+        .where(WrongQuote.rating >= min_rating)
+        .order_by(fn.Random())
+        .limit(count)
+    )
+
+    wrongquotes = [wq.get_dict() for wq in selected]
+
+    return jsonify(wrongquotes)
 
 
 @api.route("/wrongquotes/<int:pk>", methods=["GET", "POST"])
