@@ -5,7 +5,7 @@ from flask import session, flash, g, redirect, render_template, request, Respons
 
 from db import WrongQuote, Quote, Author
 from api import api
-    
+
 def render_ab():
     g.page = "start"
 
@@ -228,11 +228,8 @@ def create_app(test_config=None):
     def top():
         g.page = "top"
 
-        quotes = sorted(
-            list(WrongQuote.select()),
-            key=lambda quote: quote.get_score(),
-            reverse=True,
-        )
+        quotes = WrongQuote.select().order_by(WrongQuote.score.desc()).limit(5)
+
         g.quotes = [
             (
                 f'„{quote.quote.quote}“ - {quote.author.author}',
@@ -247,11 +244,7 @@ def create_app(test_config=None):
     def topall():
         g.page = "top"
 
-        quotes = sorted(
-            list(WrongQuote.select()),
-            key=lambda quote: quote.get_score(),
-            reverse=True,
-        )
+        quotes = WrongQuote.select().order_by(WrongQuote.score.desc())
         g.quotes = [
             (
                 f'„{quote.quote.quote}“ - {quote.author.author}',
