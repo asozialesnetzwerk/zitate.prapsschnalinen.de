@@ -72,6 +72,18 @@ class WrongQuote(BaseModel):
 
     score  = IntegerField(default=0)
 
+    @classmethod
+    def select_all_foreign_keys_resolved(cls):
+        RealAuthor = Author.alias()
+        return (
+            cls.select(cls, Quote, RealAuthor, Author)
+            .join(Author, on=cls.author)
+            .switch(cls)
+            .join(Quote, on=cls.quote)
+            .join(RealAuthor, on=Quote.author)
+            .switch(cls)
+        )
+
     def get_score(self):
         score = ((self.voted / self.showed) if self.showed > 0 else 0) + (
             self.rating

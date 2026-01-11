@@ -32,16 +32,8 @@ def api_wrongquotes():
             request.args.get("no_text") == "true"
         )
 
-        RealAuthor = Author.alias()
+        selected = WrongQuote.select_all_foreign_keys_resolved()
 
-        selected = (
-            WrongQuote.select(WrongQuote, Quote, RealAuthor, Author)
-            .join(Author, on=WrongQuote.author)
-            .switch(WrongQuote)
-            .join(Quote, on=WrongQuote.quote)
-            .join(RealAuthor, on=Quote.author)
-            .switch(WrongQuote)
-        )
         # Select Quotes from db
         if ("quote" in request.args) and ("author" in request.args):
             selected = selected.where(
