@@ -3,11 +3,19 @@ from db import WrongQuote, Quote, Author
 import db
 import random
 import pickle
+from peewee import fn
 
 api = Blueprint("/api", __name__, url_prefix="/api")
 
 with open("apikeys.pkl", "rb") as f:
     apikeys = pickle.load(f)
+
+
+if False:
+    import logging
+    logger = logging.getLogger('peewee')
+    logger.addHandler(logging.StreamHandler())
+    logger.setLevel(logging.DEBUG)
 
 
 @api.route("/")
@@ -19,49 +27,54 @@ def docs():
 def api_wrongquotes():
     if request.method == "GET":
         wrongquotes = []
-        sortkeys = {
-            "random": lambda model: random.random(),
-            "quote": lambda model: model.quote.quote,
-            "author": lambda model: model.author.author,
-            "score": lambda model: model.get_score(),
-        }
-
-        # Select Quotes from db
-        if ("quote" in request.args) and ("author" in request.args):
-            selected = WrongQuote.select().where(
-                (WrongQuote.author == request.args.get("author"))
-                & (WrongQuote.quote == request.args.get("quote"))
-            )
-        elif "quote" in request.args:
-            selected = WrongQuote.select().where(
-                WrongQuote.quote == request.args.get("quote")
-            )
-        elif "author" in request.args:
-            selected = WrongQuote.select().where(
-                WrongQuote.author == request.args.get("author")
-            )
-        else:
-            selected = WrongQuote.select()
 
         no_text = ("no_text" in request.args) and (
             request.args.get("no_text") == "true"
         )
-        sortkey = (
-            sortkeys[request.args.get("sort")]
-            if "sort" in request.args
-            else sortkeys["quote"]
-        )
 
-        for wrongquote in sorted(selected, key=sortkey)[
-            : int(request.args.get("count"))
-            if "count" in request.args
-            else len(selected)
-        ]:
+        RealAuthor = Author.alias()
+
+        selected = (
+            WrongQuote.select(WrongQuote, Quote, RealAuthor, Author)
+            .join(Author, on=WrongQuote.author)
+            .switch(WrongQuote)
+            .join(Quote, on=WrongQuote.quote)
+            .join(RealAuthor, on=Quote.author)
+            .switch(WrongQuote)
+        )
+        # Select Quotes from db
+        if ("quote" in request.args) and ("author" in request.args):
+            selected = selected.where(
+                (WrongQuote.author.id == int(request.args.get("author")))
+                & (WrongQuote.quote.id == int(request.args.get("quote")))
+            )
+        elif "quote" in request.args:
+            selected = selected.where(
+                WrongQuote.quote.id == int(request.args.get("quote"))
+            )
+        elif "author" in request.args:
+            selected = selected.where(
+                WrongQuote.author.id == int(request.args.get("author"))
+            )
+
+        if sort := request.args.get("sort"):
+            sortkeys = {
+                "random": fn.Random(),
+                "quote": WrongQuote.quote.quote,
+                "author": WrongQuote.author.author,
+                "score": WrongQuote.score,
+            }
+            selected = selected.order_by(sortkeys[sort])
+
+        if count := request.args.get("count"):
+            selected = selected.limit(int(count))
+
+        for wrongquote in selected:
             if (
                 (
                     (
                         request.args.get("search").lower()
-                        in wrongquote.quote.quote + wrongquote.author.author
+                        in wrongquote.quote.quote  + " " + wrongquote.author.author
                     )
                     if "search" in request.args
                     else True
@@ -130,7 +143,7 @@ def api_wrongquotes_random():
 @api.route("/wrongquotes/<int:pk>", methods=["GET", "POST"])
 def api_wrongquotes_id(pk):
     if request.method == "GET":
-        try: 
+        try:
             return jsonify(WrongQuote.get_by_id(pk).get_dict())
         except db.WrongQuoteDoesNotExist:
             return jsonify({"error":"quote not found"})
