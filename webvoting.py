@@ -39,6 +39,9 @@ def render_ab():
             quote.delete_instance()
             final_quotes.remove(quote)
 
+    if not final_quotes:
+        return render_template("base.html")
+
     zit1 = choice(final_quotes)
     zit2 = choice(final_quotes)
     while zit1 == zit2:
@@ -66,6 +69,8 @@ def render_isfunny(minscore):
         valid_quotes.append(quote)
     if len(valid_quotes) == 0:
         valid_quotes  = list(quotes)
+    if not valid_quotes:
+        return render_template("base.html")
     chosen  = choice(valid_quotes)
     g.zit1id = chosen._pk
     g.zit1q  = chosen.quote.quote
