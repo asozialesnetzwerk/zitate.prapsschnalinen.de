@@ -84,17 +84,20 @@ def api_wrongquotes():
             and (request.args.get("simulate") == "true")
             and (len(wrongquotes) == 0)
         ):
-            wrongquotes.append(
-                {
-                    "id": None,
-                    "quote": Quote.get_by_id(request.args.get("quote")).get_dict(),
-                    "author": Author.get_by_id(request.args.get("author")).get_dict(),
-                    "voted": 0,
-                    "showed": 0,
-                    "rating": 0,
-                    "checked": True,
-                }
-            )
+            quote = Quote.get_or_none(Quote._pk == request.args.get("quote"))
+            author =  Author.get_or_none(Author._pk == request.args.get("author"))
+            if quote and author:
+                wrongquotes.append(
+                    {
+                        "id": None,
+                        "quote": quote.get_dict(),
+                        "author": author.get_dict(),
+                        "voted": 0,
+                        "showed": 0,
+                        "rating": 0,
+                        "checked": True,
+                    }
+                )
         return jsonify(wrongquotes)
 
     elif request.method == "POST":
