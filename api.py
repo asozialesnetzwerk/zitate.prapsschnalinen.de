@@ -207,8 +207,10 @@ def authors():
 
 @api.route("/authors/<int:pk>")
 def author(pk):
-    return jsonify(Author.get_by_id(pk).get_dict())
-
+    try:
+        return jsonify(Author.get_by_id(pk).get_dict())
+    except db.Author.DoesNotExist:
+        return jsonify({"error":"author not found"}), 404
 
 @api.route("/authors/count")
 def author_count():
