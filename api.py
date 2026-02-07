@@ -132,18 +132,17 @@ def api_wrongquotes_random():
 
 @api.route("/wrongquotes/<int:pk>", methods=["GET", "POST"])
 def api_wrongquotes_id(pk):
-    if request.method == "GET":
-        try: 
+    try:
+        if request.method == "GET":
             return jsonify(WrongQuote.get_by_id(pk).get_dict())
-        except db.WrongQuote.DoesNotExist:
-            return jsonify({"error":"quote not found"}), 404
-    elif request.method == "POST":
-        if int(request.form["vote"]) in [-1, 1]:
-            wrongquote = WrongQuote.get_by_id(pk)
-            wrongquote.rating += int(request.form["vote"])
-            wrongquote.save()
-            return jsonify(wrongquote.get_dict())
-
+        elif request.method == "POST":
+            if int(request.form["vote"]) in [-1, 1]:
+                wrongquote = WrongQuote.get_by_id(pk)
+                wrongquote.rating += int(request.form["vote"])
+                wrongquote.save()
+                return jsonify(wrongquote.get_dict())
+    except db.WrongQuote.DoesNotExist:
+        return jsonify({"error":"quote not found"}), 404
 
 @api.route("/wrongquotes/count")
 def api_wrongquotes_counts():
