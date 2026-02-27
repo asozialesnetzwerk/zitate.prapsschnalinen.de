@@ -84,17 +84,20 @@ def api_wrongquotes():
             and (request.args.get("simulate") == "true")
             and (len(wrongquotes) == 0)
         ):
-            wrongquotes.append(
-                {
-                    "id": None,
-                    "quote": Quote.get_by_id(request.args.get("quote")).get_dict(),
-                    "author": Author.get_by_id(request.args.get("author")).get_dict(),
-                    "voted": 0,
-                    "showed": 0,
-                    "rating": 0,
-                    "checked": True,
-                }
-            )
+            quote = Quote.get_or_none(Quote._pk == request.args.get("quote"))
+            author =  Author.get_or_none(Author._pk == request.args.get("author"))
+            if quote and author:
+                wrongquotes.append(
+                    {
+                        "id": None,
+                        "quote": quote.get_dict(),
+                        "author": author.get_dict(),
+                        "voted": 0,
+                        "showed": 0,
+                        "rating": 0,
+                        "checked": True,
+                    }
+                )
         return jsonify(wrongquotes)
 
     elif request.method == "POST":
@@ -129,18 +132,17 @@ def api_wrongquotes_random():
 
 @api.route("/wrongquotes/<int:pk>", methods=["GET", "POST"])
 def api_wrongquotes_id(pk):
-    if request.method == "GET":
-        try: 
+    try:
+        if request.method == "GET":
             return jsonify(WrongQuote.get_by_id(pk).get_dict())
-        except db.WrongQuoteDoesNotExist:
-            return jsonify({"error":"quote not found"})
-    elif request.method == "POST":
-        if int(request.form["vote"]) in [-1, 1]:
-            wrongquote = WrongQuote.get_by_id(pk)
-            wrongquote.rating += int(request.form["vote"])
-            wrongquote.save()
-            return jsonify(wrongquote.get_dict())
-
+        elif request.method == "POST":
+            if int(request.form["vote"]) in [-1, 1]:
+                wrongquote = WrongQuote.get_by_id(pk)
+                wrongquote.rating += int(request.form["vote"])
+                wrongquote.save()
+                return jsonify(wrongquote.get_dict())
+    except db.WrongQuote.DoesNotExist:
+        return jsonify({"error":"quote not found"}), 404
 
 @api.route("/wrongquotes/count")
 def api_wrongquotes_counts():
@@ -205,8 +207,10 @@ def authors():
 
 @api.route("/authors/<int:pk>")
 def author(pk):
-    return jsonify(Author.get_by_id(pk).get_dict())
-
+    try:
+        return jsonify(Author.get_by_id(pk).get_dict())
+    except db.Author.DoesNotExist:
+        return jsonify({"error":"author not found"}), 404
 
 @api.route("/authors/count")
 def author_count():
