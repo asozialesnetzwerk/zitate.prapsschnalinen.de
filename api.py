@@ -64,29 +64,25 @@ def api_wrongquotes():
                 return "Supported orderings: " + ", ".join(list(sortkeys) + [f"-{key}" for key in sortkeys if key != "random"]), 400
             selected = selected.order_by(sortkeys[sort], WrongQuote.id)
 
+
+        if "search" in request.args:
+            search = request.args.get("search").lower()
+            selected = selected.where(fn.LOWER(WrongQuote.author.author).contains(search) | fn.LOWER(WrongQuote.quote.quote).contains(search))
+
+        if "min_score" in request.args:
+            min_score = int(request.args.get("min_score"))
+            selected = selected.where(WrongQuote.score >= min_score)
+
         if count := request.args.get("count"):
             selected = selected.limit(int(count))
 
         for wrongquote in selected:
-            if (
-                (
-                    (
-                        request.args.get("search").lower()
-                        in wrongquote.quote.quote  + " " + wrongquote.author.author
-                    )
-                    if "search" in request.args
-                    else True
-                )
-                and (wrongquote.get_score() >= int(request.args.get("min_score")))
-                if "min_score" in request.args
-                else True
-            ):
-                wq_dict = wrongquote.get_dict()
-                if no_text:
-                    del wq_dict["author"]["author"]
-                    del wq_dict["quote"]["quote"]
-                    del wq_dict["quote"]["author"]["author"]
-                wrongquotes.append(wq_dict)
+            wq_dict = wrongquote.get_dict()
+            if no_text:
+                del wq_dict["author"]["author"]
+                del wq_dict["quote"]["quote"]
+                del wq_dict["quote"]["author"]["author"]
+            wrongquotes.append(wq_dict)
         # Simulate existing quote
         if (
             ("simulate" in request.args)
