@@ -3,11 +3,19 @@ from db import WrongQuote, Quote, Author
 import db
 import random
 import pickle
+from peewee import fn
 
 api = Blueprint("/api", __name__, url_prefix="/api")
 
 with open("apikeys.pkl", "rb") as f:
     apikeys = pickle.load(f)
+
+
+if False:
+    import logging
+    logger = logging.getLogger('peewee')
+    logger.addHandler(logging.StreamHandler())
+    logger.setLevel(logging.DEBUG)
 
 
 @api.route("/")
@@ -19,49 +27,52 @@ def docs():
 def api_wrongquotes():
     if request.method == "GET":
         wrongquotes = []
-        sortkeys = {
-            "random": lambda model: random.random(),
-            "quote": lambda model: model.quote.quote,
-            "author": lambda model: model.author.author,
-            "score": lambda model: model.get_score(),
-        }
-
-        # Select Quotes from db
-        if ("quote" in request.args) and ("author" in request.args):
-            selected = WrongQuote.select().where(
-                (WrongQuote.author == request.args.get("author"))
-                & (WrongQuote.quote == request.args.get("quote"))
-            )
-        elif "quote" in request.args:
-            selected = WrongQuote.select().where(
-                WrongQuote.quote == request.args.get("quote")
-            )
-        elif "author" in request.args:
-            selected = WrongQuote.select().where(
-                WrongQuote.author == request.args.get("author")
-            )
-        else:
-            selected = WrongQuote.select()
 
         no_text = ("no_text" in request.args) and (
             request.args.get("no_text") == "true"
         )
-        sortkey = (
-            sortkeys[request.args.get("sort")]
-            if "sort" in request.args
-            else sortkeys["quote"]
-        )
 
-        for wrongquote in sorted(selected, key=sortkey)[
-            : int(request.args.get("count"))
-            if "count" in request.args
-            else len(selected)
-        ]:
+        selected = WrongQuote.select_all_foreign_keys_resolved()
+
+        # Select Quotes from db
+        if ("quote" in request.args) and ("author" in request.args):
+            selected = selected.where(
+                (WrongQuote.author.id == int(request.args.get("author")))
+                & (WrongQuote.quote.id == int(request.args.get("quote")))
+            )
+        elif "quote" in request.args:
+            selected = selected.where(
+                WrongQuote.quote.id == int(request.args.get("quote"))
+            )
+        elif "author" in request.args:
+            selected = selected.where(
+                WrongQuote.author.id == int(request.args.get("author"))
+            )
+
+        if sort := request.args.get("sort"):
+            desc = False
+            if sort[0] == "-":
+                sort = sort[1:]
+                desc = True
+            sortkeys = {
+                "random": fn.Random(),
+                "quote": WrongQuote.quote.quote.desc() if desc else WrongQuote.quote.quote,
+                "author": WrongQuote.author.author.desc() if desc else WrongQuote.author.author,
+                "score": WrongQuote.score.desc() if desc else WrongQuote.score,
+            }
+            if sort not in sortkeys:
+                return "Supported orderings: " + ", ".join(list(sortkeys) + [f"-{key}" for key in sortkeys if key != "random"]), 400
+            selected = selected.order_by(sortkeys[sort], WrongQuote.id)
+
+        if count := request.args.get("count"):
+            selected = selected.limit(int(count))
+
+        for wrongquote in selected:
             if (
                 (
                     (
                         request.args.get("search").lower()
-                        in wrongquote.quote.quote + wrongquote.author.author
+                        in wrongquote.quote.quote  + " " + wrongquote.author.author
                     )
                     if "search" in request.args
                     else True
@@ -113,21 +124,22 @@ def api_wrongquotes():
 def api_wrongquotes_random():
     min_rating = 0
     if "min_rating" in request.args:
-        min_rating = request.args.get("min_rating", int)
-
-    selected = WrongQuote.select().where(WrongQuote.rating >= min_rating)
-
-    wrongquotes = []
-    for wrongquote in selected:
-        wrongquotes.append(wrongquote.get_dict())
-
-    random.shuffle(wrongquotes)
+        min_rating = request.args.get("min_rating", default=0, type=int)
 
     count = 1
     if "count" in request.args:
-        count = int(request.args.get("count", int))
+        count = int(request.args.get("count", default=1, type=int))
 
-    return jsonify(wrongquotes[0:count])
+    selected = (
+        WrongQuote.select_all_foreign_keys_resolved()
+        .where(WrongQuote.rating >= min_rating)
+        .order_by(fn.Random())
+        .limit(count)
+    )
+
+    wrongquotes = [wq.get_dict() for wq in selected]
+
+    return jsonify(wrongquotes)
 
 
 @api.route("/wrongquotes/<int:pk>", methods=["GET", "POST"])

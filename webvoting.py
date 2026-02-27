@@ -5,7 +5,7 @@ from flask import session, flash, g, redirect, render_template, request, Respons
 
 from db import WrongQuote, Quote, Author
 from api import api
-    
+
 def render_ab():
     g.page = "start"
 
@@ -39,6 +39,9 @@ def render_ab():
             quote.delete_instance()
             final_quotes.remove(quote)
 
+    if not final_quotes:
+        return render_template("base.html")
+
     zit1 = choice(final_quotes)
     zit2 = choice(final_quotes)
     while zit1 == zit2:
@@ -66,6 +69,8 @@ def render_isfunny(minscore):
         valid_quotes.append(quote)
     if len(valid_quotes) == 0:
         valid_quotes  = list(quotes)
+    if not valid_quotes:
+        return render_template("base.html")
     chosen  = choice(valid_quotes)
     g.zit1id = chosen._pk
     g.zit1q  = chosen.quote.quote
@@ -223,11 +228,8 @@ def create_app(test_config=None):
     def top():
         g.page = "top"
 
-        quotes = sorted(
-            list(WrongQuote.select()),
-            key=lambda quote: quote.get_score(),
-            reverse=True,
-        )
+        quotes = WrongQuote.select().order_by(WrongQuote.score.desc()).limit(5)
+
         g.quotes = [
             (
                 f'„{quote.quote.quote}“ - {quote.author.author}',
@@ -242,11 +244,7 @@ def create_app(test_config=None):
     def topall():
         g.page = "top"
 
-        quotes = sorted(
-            list(WrongQuote.select()),
-            key=lambda quote: quote.get_score(),
-            reverse=True,
-        )
+        quotes = WrongQuote.select().order_by(WrongQuote.score.desc())
         g.quotes = [
             (
                 f'„{quote.quote.quote}“ - {quote.author.author}',
