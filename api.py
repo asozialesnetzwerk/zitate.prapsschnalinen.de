@@ -189,7 +189,10 @@ def quotes():
 
 @api.route("/quotes/<int:pk>")
 def quote(pk):
-    return jsonify(Quote.get_by_id(pk).get_dict())
+    try:
+        return jsonify(Quote.get_by_id(pk).get_dict())
+    except db.Quote.DoesNotExist:
+        return jsonify({"error":"quote not found"}), 404
 
 
 @api.route("/quotes/count")
